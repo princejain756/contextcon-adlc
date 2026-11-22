@@ -6,6 +6,7 @@ Submitted for HackerEarth **ContextCon: Remember Everything** under Theme 01 (Co
 
 - **Live Interactive 2-Minute Audit Portal**: https://contextcon.prince.sh
 - **Public GitHub Repository**: https://github.com/princejain756/contextcon-adlc
+- **Demo Video (<5 min)**: https://youtu.be/ApDd1sFDhNs
 
 ## Problem
 

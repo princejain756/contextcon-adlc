@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import os
+import re
+import shutil
 import subprocess
 import time
 import urllib.request
@@ -24,6 +27,54 @@ def count_tokens(text: str) -> int:
         return max(1, len(text) // 4)
 
 
+_SENSITIVE_REPORT_KEYS = frozenset({
+    "upload_fields",
+    "upload_url",
+    "presigned_url",
+    "policy",
+    "password",
+    "admin_password",
+    "api_key",
+    "authorization",
+    "x-amz-credential",
+    "x-amz-signature",
+    "x-amz-security-token",
+    "x-amz-algorithm",
+    "x-amz-date",
+    "x-amz-checksum-sha256",
+})
+_SECRET_VALUE_PATTERNS = (
+    (re.compile(r"AKIA[0-9A-Z]{16}"), "AKIA***REDACTED***"),
+    (re.compile(r"mko_[A-Za-z0-9_-]{12,}"), "mko_***REDACTED***"),
+    (re.compile(r'''(X-Amz-(?:Signature|Credential|Security-Token)=)[^&\s"']+'''), r"\1***REDACTED***"),
+)
+
+
+def sanitize_public_report(obj: Any) -> Any:
+    """Recursively strip S3 presigned upload credentials, passwords, and API tokens from public exports."""
+    if isinstance(obj, dict):
+        cleaned: dict[str, Any] = {}
+        is_s3_init = "fields" in obj and isinstance(obj.get("fields"), dict) and (
+            any(str(fk).lower().startswith("x-amz-") or str(fk).lower() == "policy" for fk in obj["fields"])
+        )
+        for k, v in obj.items():
+            kl = str(k).lower()
+            if kl in _SENSITIVE_REPORT_KEYS or kl.startswith("x-amz-"):
+                continue
+            if is_s3_init and kl in ("fields", "url"):
+                continue
+            cleaned[k] = sanitize_public_report(v)
+        return cleaned
+    if isinstance(obj, list):
+        return [sanitize_public_report(item) for item in obj]
+    if isinstance(obj, str):
+        s = obj
+        for pat, repl in _SECRET_VALUE_PATTERNS:
+            s = pat.sub(repl, s)
+        return s
+    return obj
+
+
 def run_cli_prompt(
     cmd: list[str],
     prompt: str,
@@ -32,11 +83,18 @@ def run_cli_prompt(
     timeout_s: float = 120.0,
     cwd: str | None = "/tmp",
 ) -> tuple[str, float]:
+    resolved = shutil.which(cmd[0]) or cmd[0]
+    full_cmd = [resolved, *cmd[1:]]
     env = os.environ.copy()
     for k in unset_env:
         env.pop(k, None)
     t0 = time.perf_counter()
-    proc = subprocess.run(cmd, input=prompt, text=True, capture_output=True, env=env, timeout=timeout_s, cwd=cwd)
+    try:
+        proc = subprocess.run(full_cmd, input=prompt, text=True, capture_output=True, env=env, timeout=timeout_s, cwd=cwd)
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(
+            f"Required CLI binary {cmd[0]!r} was not found in PATH. Run offline checks via `uv run meko-adlc doctor`."
+        ) from exc
     elapsed = time.perf_counter() - t0
     if proc.returncode != 0:
         raise RuntimeError(f"CLI {cmd[0]} failed rc={proc.returncode}: {(proc.stderr or proc.stdout)[:400]}")
@@ -212,8 +270,9 @@ def seed_knowledge_base(client: MekoMCPClient, repo_dir: Path, *, delete_stale_m
         "adr007_status": {"present_before_check": adr007_present, "reseeded": adr007_reseeded, "upload": adr007_upload},
         "datapack": desc,
     }
-    (data_dir / "seed_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-    return report
+    safe_report = sanitize_public_report(report)
+    (data_dir / "seed_report.json").write_text(json.dumps(safe_report, indent=2), encoding="utf-8")
+    return safe_report
 
 def _get_public_ipv4() -> str:
     with urllib.request.urlopen("https://api.ipify.org", timeout=10) as r:
@@ -327,7 +386,23 @@ def _exec_sql_statements(cur: Any, sql_text: str) -> None:
             cur.execute(s + ";")
 
 
-def run_amp_branch_check(client: MekoMCPClient, repo_dir: Path) -> dict[str, Any]:
+def _read_dotenv_key(path: Path, key: str) -> str | None:
+    if not path.is_file():
+        return None
+    for ln in path.read_text(encoding="utf-8").splitlines():
+        s = ln.strip()
+        if s.startswith(f"{key}="):
+            return s.split("=", 1)[1].strip().strip('"').strip("'")
+    return None
+
+
+def run_amp_branch_check(
+    client: MekoMCPClient,
+    repo_dir: Path,
+    *,
+    recreate_if_missing_pw: bool = False,
+    write_env: bool = False,
+) -> dict[str, Any]:
     data_dir = repo_dir / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
     conv = client.conversation_create(title="amp-postgres-branch-check", agent_id="amp-verifier")
@@ -344,25 +419,35 @@ def run_amp_branch_check(client: MekoMCPClient, repo_dir: Path) -> dict[str, Any
     cidr = f"{public_ip}/32"
     report["allowed_cidr"] = cidr
 
-    env_path = repo_dir.parent / ".env"
-    stored_pw = None
-    if env_path.is_file():
-        for ln in env_path.read_text(encoding="utf-8").splitlines():
-            if ln.strip().startswith("MEKO_AMP_ADMIN_PW="):
-                stored_pw = ln.strip().split("=", 1)[1]
-                break
+    repo_env_path = repo_dir / ".env"
+    stored_pw = (
+        os.environ.get("MEKO_AMP_ADMIN_PW")
+        or _read_dotenv_key(repo_env_path, "MEKO_AMP_ADMIN_PW")
+        or _read_dotenv_key(repo_dir.parent / ".env", "MEKO_AMP_ADMIN_PW")
+    )
 
     cluster_id: str | None = None
     main_branch_id: str | None = None
     fork_branch_id: str | None = None
     temp_computes: list[tuple[str, str]] = []
+    pg_ver: str | None = None
+    cow_inherited_rows = 0
+    check_rejected = False
+    cleanup_errors: list[str] = []
+    report["verified"] = False
 
     try:
         clusters = client.amp_cluster_list(cid)
         cluster_list = clusters.get("clusters", clusters) if isinstance(clusters, dict) else (clusters if isinstance(clusters, list) else [])
         existing = next((c for c in cluster_list if isinstance(c, dict) and c.get("name") == "adlc-ledger-db"), None)
 
-        if existing and not stored_pw:
+        if existing and not stored_pw and not recreate_if_missing_pw:
+            raise MekoToolError(
+                "Existing AMP cluster 'adlc-ledger-db' found without MEKO_AMP_ADMIN_PW; "
+                "set MEKO_AMP_ADMIN_PW or pass --recreate-if-missing-pw."
+            )
+
+        if existing and not stored_pw and recreate_if_missing_pw:
             old_id = _extract_id(existing, "id", "cluster_id")
             if old_id:
                 client.amp_cluster_delete(old_id, cid)
@@ -389,11 +474,11 @@ def run_amp_branch_check(client: MekoMCPClient, repo_dir: Path) -> dict[str, Any
             db_obj = created.get("default_branch") or {} if isinstance(created, dict) else {}
             main_branch_id = _extract_id(db_obj, "branch_id", "id")
             report["cluster_created"] = {"cluster_id": cluster_id, "cidr": cidr}
-            if env_path.is_file():
-                cur_env = env_path.read_text(encoding="utf-8")
+            if write_env:
+                cur_env = repo_env_path.read_text(encoding="utf-8") if repo_env_path.is_file() else ""
                 if "MEKO_AMP_ADMIN_PW=" not in cur_env:
-                    env_path.write_text(cur_env.rstrip("\n") + f"\nMEKO_AMP_ADMIN_PW={cluster_pw}\n", encoding="utf-8")
-                    os.chmod(env_path, 0o600)
+                    repo_env_path.write_text((cur_env.rstrip("\n") + f"\nMEKO_AMP_ADMIN_PW={cluster_pw}\n").lstrip("\n"), encoding="utf-8")
+                    os.chmod(repo_env_path, 0o600)
 
         if not main_branch_id and cluster_id:
             blist = client.amp_branch_list(cluster_id, cid)
@@ -552,24 +637,50 @@ def run_amp_branch_check(client: MekoMCPClient, repo_dir: Path) -> dict[str, Any
             try:
                 client.amp_compute_delete(cluster_id, br_id, cp_id, cid)
             except Exception as exc:
+                err_s = f"compute {cp_id}: {exc}"
+                cleanup_errors.append(err_s)
                 report["compute_cleanup_note"] = str(exc)
         if cluster_id and fork_branch_id:
             try:
                 client.amp_branch_delete(cluster_id, fork_branch_id, cid)
             except Exception as exc:
+                err_s = f"branch {fork_branch_id}: {exc}"
+                cleanup_errors.append(err_s)
                 report["branch_cleanup_note"] = str(exc)
-        report["amp_core_budget_after"] = client.amp_core_budget(conversation_id=cid)
+        try:
+            report["amp_core_budget_after"] = client.amp_core_budget(conversation_id=cid)
+        except Exception as exc:
+            cleanup_errors.append(f"budget_after: {exc}")
 
+    cleanup_ok = len(cleanup_errors) == 0
+    report["cleanup_ok"] = cleanup_ok
+    report["cleanup_errors"] = cleanup_errors
+    report["verified"] = bool(
+        pg_ver
+        and "PostgreSQL 18" in str(pg_ver)
+        and cow_inherited_rows >= 1
+        and check_rejected
+        and cleanup_ok
+        and not report.get("error")
+        and report.get("status") == "amp_branch_verified"
+    )
+    if not report["verified"] and report.get("status") == "amp_branch_verified":
+        report["status"] = "amp_verification_incomplete"
+
+    safe_report = sanitize_public_report(report)
     client.conversation_add_message(
         conversation_id=cid,
         user_input="Run zero-copy AMP Postgres branch verification for ledger-service migrations within 0.5 vCPU budget.",
-        assistant_output=json.dumps(report)[:3500],
+        assistant_output=json.dumps(safe_report)[:3500],
         agent_id="amp-verifier",
-        reasoning="Created fork while main endpoint was deployed, retired main compute, verified CoW inherited rows + idempotent CONCURRENTLY index + CHECK constraint rejection on Postgres 18 fork, and retired temporary compute/branch cleanly.",
-        metadata={"status": report["status"]},
+        reasoning=(
+            f"AMP verification status={safe_report.get('status')} verified={safe_report.get('verified')} "
+            f"cow_rows={cow_inherited_rows} check_rejected={check_rejected} cleanup_ok={cleanup_ok}."
+        ),
+        metadata={"status": safe_report["status"], "verified": safe_report["verified"]},
     )
-    (data_dir / "amp_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-    return report
+    (data_dir / "amp_report.json").write_text(json.dumps(safe_report, indent=2), encoding="utf-8")
+    return safe_report
 
 def _extract_memory_ids(mem_res: Any) -> list[str]:
     ids: list[str] = []
@@ -593,7 +704,10 @@ def _extract_memory_ids(mem_res: Any) -> list[str]:
     return list(dict.fromkeys(ids))
 
 
-def run_handoff_agent1_claude(client: MekoMCPClient, repo_dir: Path, claude_bin: str = "/Users/admin/.local/bin/claude") -> dict[str, Any]:
+def run_handoff_agent1_claude(client: MekoMCPClient, repo_dir: Path, claude_bin: str | None = None) -> dict[str, Any]:
+    resolved_claude = claude_bin or shutil.which("claude")
+    if not resolved_claude:
+        raise FileNotFoundError("claude CLI not found in PATH; pass --claude-bin or install Claude Code.")
     """Agent 1 (Claude Code on Mac mini) plans migration 0003, persists gotcha, promotes memory, uploads artifact."""
     conv = client.conversation_create(
         title="adlc-handoff-refund-migration-0003",
@@ -620,7 +734,7 @@ def run_handoff_agent1_claude(client: MekoMCPClient, repo_dir: Path, claude_bin:
         "Return ONLY the SQL inside a ```sql code fence."
     )
     raw_out, elapsed_s = run_cli_prompt(
-        [claude_bin, "-p", "--tools="],
+        [resolved_claude, "-p", "--tools="],
         prompt,
         unset_env=("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL"),
         timeout_s=120.0,
@@ -666,15 +780,22 @@ def run_handoff_agent1_claude(client: MekoMCPClient, repo_dir: Path, claude_bin:
     )
     client.track_token_usage(cid, "agent1_claude_code_architect", in_tok, out_tok, model="claude-code")
 
-    return {
+    a1_out = sanitize_public_report({
         "conversation_id": cid,
+        "agent_id": "claude-code-architect",
+        "provenance": "live_agent1_run",
         "memory_ids": mem_ids,
         "promoted": promo_res,
         "artifact_hash": art_hash,
         "artifact_res": art_res,
         "verifier": vcheck,
         "tokens": {"input": in_tok, "output": out_tok},
-    }
+        "elapsed_s": round(elapsed_s, 3),
+    })
+    data_dir = repo_dir / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    (data_dir / "handoff_agent1.json").write_text(json.dumps(a1_out, indent=2), encoding="utf-8")
+    return a1_out
 
 
 def run_handoff_agent23_mbp(
@@ -682,6 +803,8 @@ def run_handoff_agent23_mbp(
     repo_dir: Path,
     conversation_id: str,
     artifact_hash: str,
+    *,
+    agent1_report_path: Path | None = None,
 ) -> dict[str, Any]:
     """Agents 2 (Codex on MacBook Pro) and 3 (PR Drift Guard) create run_id-linked sessions and share Meko KB/Artifacts."""
     data_dir = repo_dir / "data"
@@ -715,15 +838,21 @@ def run_handoff_agent23_mbp(
         artifact_access_mode = "creator_scoped"
         art_payload = client.artifact_get(artifact_hash, conversation_id=conversation_id, agent_id="claude-code-architect")
 
+    raw_art_bytes = b""
     sql_from_meko = ""
     if isinstance(art_payload, dict):
         if art_payload.get("content_base64"):
-            sql_from_meko = base64.b64decode(art_payload["content_base64"]).decode("utf-8", errors="replace")
+            raw_art_bytes = base64.b64decode(art_payload["content_base64"])
+            sql_from_meko = raw_art_bytes.decode("utf-8", errors="replace")
         elif art_payload.get("content"):
             sql_from_meko = str(art_payload["content"])
+            raw_art_bytes = sql_from_meko.encode("utf-8")
         else:
             sql_from_meko = json.dumps(art_payload)
+            raw_art_bytes = sql_from_meko.encode("utf-8")
 
+    actual_art_sha256 = hashlib.sha256(raw_art_bytes).hexdigest()
+    art_sha_verified = bool(artifact_hash) and (actual_art_sha256 == artifact_hash)
     sql_check = verify_task_output("sql_constraint", sql_from_meko)
     codex_prompt = (
         "You are Agent 2 (Codex Verifier) resuming a task solely from Meko Cloud memory and artifact.\n"
@@ -844,20 +973,55 @@ def run_handoff_agent23_mbp(
     )
     client.track_token_usage(review_cid, "agent3_pr_drift_guard", rev_in, rev_out, model="deepseek-v4.1-flash")
 
-    final = {
-        "run_id": conversation_id,
-        "agent1_claude": {
+    agent1_block: dict[str, Any] = {
+        "conversation_id": conversation_id,
+        "agent_id": "claude-code-architect",
+        "artifact_hash": artifact_hash,
+        "provenance": "external_unverified",
+        "memory_ids": [],
+        "verifier": None,
+        "tokens": None,
+    }
+    if agent1_report_path is not None:
+        a1_loaded = json.loads(Path(agent1_report_path).read_text(encoding="utf-8"))
+        if str(a1_loaded.get("conversation_id") or "") != str(conversation_id):
+            raise ValueError("agent1_report conversation_id mismatch")
+        if artifact_hash and a1_loaded.get("artifact_hash") and str(a1_loaded.get("artifact_hash")) != str(artifact_hash):
+            raise ValueError("agent1_report artifact_hash mismatch")
+        agent1_block = {
             "conversation_id": conversation_id,
-            "agent_id": "claude-code-architect",
-            "memory_ids": ["3ab4a2a2-1262-4844-8bc0-4c00a4c9d467"],
+            "agent_id": str(a1_loaded.get("agent_id") or "claude-code-architect"),
             "artifact_hash": artifact_hash,
-            "verifier": {"passed": True, "rule_violations": []},
-            "tokens": {"input": 1062, "output": 316},
-        },
+            "provenance": "linked_agent1_report",
+            "memory_ids": list(a1_loaded.get("memory_ids") or []),
+            "verifier": a1_loaded.get("verifier"),
+            "tokens": a1_loaded.get("tokens"),
+        }
+    elif isinstance(prior_msgs, list):
+        for pm in reversed(prior_msgs):
+            if isinstance(pm, dict) and isinstance(pm.get("metadata"), dict):
+                pmeta = pm["metadata"]
+                if "verifier" in pmeta or "memory_ids" in pmeta:
+                    agent1_block = {
+                        "conversation_id": conversation_id,
+                        "agent_id": "claude-code-architect",
+                        "artifact_hash": str(pmeta.get("artifact_hash") or artifact_hash),
+                        "provenance": "meko_conversation_get",
+                        "memory_ids": list(pmeta.get("memory_ids") or []),
+                        "verifier": pmeta.get("verifier"),
+                        "tokens": pmeta.get("tokens"),
+                    }
+                    break
+
+    final = sanitize_public_report({
+        "run_id": conversation_id,
+        "agent1_claude": agent1_block,
         "agent2_codex": {
             "conversation_id": codex_cid,
             "agent_id": "codex-verifier",
             "artifact_access_mode": artifact_access_mode,
+            "artifact_sha256_verified": art_sha_verified,
+            "artifact_actual_sha256": actual_art_sha256,
             "sql_check": sql_check,
             "elapsed_s": round(codex_s, 3),
             "tokens": {"in": codex_in, "out": codex_out},
@@ -872,7 +1036,7 @@ def run_handoff_agent23_mbp(
             "audit_artifact": rev_art,
             "raw": rev_raw,
         },
-    }
+    })
     (data_dir / "handoff_report.json").write_text(json.dumps(final, indent=2), encoding="utf-8")
     return final
 
@@ -964,5 +1128,6 @@ def run_selflearning_loop(client: MekoMCPClient, repo_dir: Path) -> dict[str, An
         agent_id="selflearning-auditor",
         reasoning="Detected weak context_search hit via selflearning_status/query_log, ingested ADR-007 + promoted memory, and replayed search via selflearning_verify.",
     )
-    (data_dir / "selflearning_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-    return report
+    safe_report = sanitize_public_report(report)
+    (data_dir / "selflearning_report.json").write_text(json.dumps(safe_report, indent=2), encoding="utf-8")
+    return safe_report

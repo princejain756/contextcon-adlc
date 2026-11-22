@@ -1380,5 +1380,10 @@
     },
     "history": [],
     "hint": "Read the searches behind a to-do with selflearning_shortfalls(todo_id=...), fix with memory_add or knowledgebase_upload_document, then check it with selflearning_verify."
-  }
+  },
+  "exported_at": "2026-11-22T09:22:48Z",
+  "snapshot_rebuilt_at": "2026-11-22T09:25:42Z",
+  "traces_attempted": 16,
+  "traces_fetched_ok": 16,
+  "fetch_errors_count": 0
 }

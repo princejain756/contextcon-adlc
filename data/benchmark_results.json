@@ -17,7 +17,8 @@
       "avg_latency_s": 25.819,
       "reference_cost_usd": 0.409461,
       "passed_count": 9,
-      "total_violations": 2
+      "total_violations": 2,
+      "total_latency_s": 258.187
     },
     "meko": {
       "total_tokens": 22942,
@@ -26,14 +27,20 @@
       "avg_latency_s": 51.983,
       "reference_cost_usd": 0.23583,
       "passed_count": 10,
-      "total_violations": 0
+      "total_violations": 0,
+      "completed_attempt_total_latency_s": 519.832,
+      "completed_attempt_avg_latency_s": 51.983
     },
     "deltas": {
       "prompt_token_reduction_pct": 90.44,
       "total_token_reduction_pct": 77.69,
       "cost_reduction_pct": 42.4,
       "latency_change_pct": 101.34
-    }
+    },
+    "retry_inclusive_lower_bound_total_s": 759.832,
+    "retry_inclusive_lower_bound_avg_s": 75.983,
+    "retry_inclusive_lower_bound_change_pct": 194.3,
+    "timing_note": "Completed-attempt averages exclude T10's initial 240.0s subprocess timeout retry in the Meko arm. Adding that documented 240.0s failed attempt yields a minimum retry-inclusive Meko total of 759.832s (75.983s/task avg, +194.3% vs Baseline 258.187s)."
   },
   "tasks": [
     {

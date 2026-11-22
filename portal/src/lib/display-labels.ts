@@ -60,6 +60,10 @@ export const STATUS_LABELS: Readonly<Record<string, string>> = {
   critical: "Critical",
   cross_agent: "Cross-Agent Direct",
   creator_scoped: "Creator Scoped",
+  historical_captured_session: "Historical Trace",
+  linked_agent1_report: "Linked Report",
+  meko_conversation_get: "Trace Verified",
+  external_unverified: "External Unverified",
 };
 
 export function severityPillClass(severity: string): string {

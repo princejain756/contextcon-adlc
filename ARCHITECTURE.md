@@ -25,14 +25,14 @@ During initial seeding, uploading raw `.md` files caused Meko's markdown parser 
 - 2 SQL migrations from `target_repo/sql/migrations/` prefixed with `FILE: target_repo/sql/migrations/<name>` (`sql_*.txt`)
 - `ADR-007_settlement_cutoff_and_holiday_windows.md` recovered/verified cleanly from the self-learning loop
 
-All `19` corpus entries verified `state == "completed"` (`196` indexed chunks total), and live `context_search` probes confirmed all four critical tokens (`ROUND_HALF_EVEN`, `hmac.compare_digest`, `v1=`, `Decimal | str | int`) remain intact (`True` on every check).
+The initial `.txt` seed queued `19` uploads (`18` repo/standards files at `9,068` `cl100k_base` upload tokens plus `MEKO.txt`, alongside `ADR-007` already in the datapack), reaching `196` total chunks in the datapack (`10` freshly uploaded documents polled explicitly to `state == "completed"`, `9` reusing prior deduped uploads). Live `context_search` probes confirmed all four critical tokens (`ROUND_HALF_EVEN`, `hmac.compare_digest`, `v1=`, `Decimal | str | int`) remain intact (`True` on every check).
 
 ## 3. Cross-Machine 3-Agent Handoff (`data/handoff_report.json`)
 
 The ADLC workflow splits across three distinct models and two hosts linked through Meko `run_id = aa0058c5affc4a17b857c03705d25df9`:
 
 1. **Agent 1 (`claude-code-architect`, Mac mini)**:
-   - Conversation `aa0058c5affc4a17b857c03705d25df9` searched ADRs, drafted PostgreSQL migration `0003_add_refund_ledger.sql` (`1,255` bytes, `verifier.passed=true`), saved and promoted collective memory `3ab4a2a2-1262-4844-8bc0-4c00a4c9d467`, uploaded the SQL artifact (`sha256=069ba98c439b7d76...`), and logged `1062` input / `316` output tokens.
+   - Conversation `aa0058c5affc4a17b857c03705d25df9` (historical captured Mac mini session; SHA-256 `069ba98c439b7d766450de3067400808847584a6c456bce911e1d8ab74bdd0b4` independently matched against Agent 1 SQL output in `exported_traces.json`) searched ADRs, drafted PostgreSQL migration `0003_add_refund_ledger.sql` (`1,255` bytes, `verifier.passed=true`), saved and promoted collective memory `3ab4a2a2-1262-4844-8bc0-4c00a4c9d467`, uploaded the SQL artifact, and logged `1062` input / `316` output tokens. Subsequent CLI updates (`--agent1-report` linkage in `handoff-agent23`) record this linkage directly without static fallbacks.
 2. **Agent 2 (`codex-verifier`, MacBook Pro `codex exec -s read-only`)**:
    - Conversation `58a8e4ff0f8448aaa0eed0bf60c5914c` started with `run_id=aa0058c5affc4a17b857c03705d25df9` and zero local chat history, retrieved Agent 1's SQL artifact across agents (`artifact_access_mode="cross_agent"`), passed `sql_constraint` validation, and generated a Python SQL lock-safety verifier in `100.176s` (`1363` in / `3975` out tokens).
 3. **Agent 3 (`pr-review-drift-guard`, DeepSeek V4.1 Flash)**:
@@ -56,3 +56,4 @@ Free-tier AMP enforces `max_cores = 0.5` vCPUs across running endpoints, and new
 2. `selflearning_status` and `selflearning_shortfalls` surfaced the coverage gap (`category = "coverage"`).
 3. Remediation uploaded `ADR-007` and promoted memory covering `21:30:00 UTC` cutoff and TARGET2/ACH holiday roll rules.
 4. `selflearning_verify` replayed test prompt `1c96a2af-e863-43d0-96f9-9615087d6937`, lifting `best_score` from `0.3025` (`low`) to `0.8674` (`high`), with `hits_above_mid = 2` and `hint = "The fix helped."`.
+5. Three telemetry views are preserved distinctly: (a) the replayed query jump (`0.3025 -> 0.8674`), (b) the immediate 5-search `status_after` window (`avg_score = 0.4542`, `high = 0`), and (c) the 7-day exported datapack aggregate (`30` searches, `0` zero-results, `avg_score = 0.6496`, `high = 7`).

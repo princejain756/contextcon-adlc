@@ -11,6 +11,7 @@ import {
   Layers,
   Menu,
   Moon,
+  Play,
   Sun,
   X,
 } from "lucide-react";
@@ -38,6 +39,7 @@ interface PortalShellProps {
   mobileOpen: boolean;
   onSetMobileOpen: (open: boolean) => void;
   onOpenJudgeBrief: () => void;
+  onOpenDemoVideo: () => void;
   datapackName: string;
   children: React.ReactNode;
 }
@@ -49,6 +51,7 @@ export function PortalShell({
   mobileOpen,
   onSetMobileOpen,
   onOpenJudgeBrief,
+  onOpenDemoVideo,
   datapackName,
   children,
 }: PortalShellProps) {
@@ -130,6 +133,17 @@ export function PortalShell({
           >
             <Activity className="h-3.5 w-3.5" />
             Open Judge Brief
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              dialogRef.current?.close();
+              onOpenDemoVideo();
+            }}
+            className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-accent px-2.5 py-1.5 text-xs font-medium text-accent-ink hover:opacity-90"
+          >
+            <Play className="h-3.5 w-3.5" />
+            Watch 4-Min Demo
           </button>
         </div>
       </div>

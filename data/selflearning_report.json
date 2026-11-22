@@ -209,16 +209,6 @@
   "kb_fix": {
     "init": {
       "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
-      "url": "https://meko-kb-uploads-launch-1.s3.us-east-2.amazonaws.com",
-      "fields": {
-        "X-Amz-Algorithm": "AWS4-HMAC-SHA256",
-        "X-Amz-Credential": "AKIA26DARBTXWPOBV2SI/20261122/us-east-2/s3/aws4_request",
-        "X-Amz-Date": "20261122T062408Z",
-        "X-Amz-Signature": "4d858def2c009ac2d91600508537fb22a29da3f21d055b8b25d106ec724135ce",
-        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0c0eab0fd0982bfbd10bf0efcc0fb21cf124263c0c9dd38d1be052e5ae5d3ddb/ADR-007_settlement_cutoff_and_holiday_windows.md",
-        "policy": "eyJjb25kaXRpb25zIjpbeyJYLUFtei1BbGdvcml0aG0iOiJBV1M0LUhNQUMtU0hBMjU2In0seyJidWNrZXQiOiJtZWtvLWtiLXVwbG9hZHMtbGF1bmNoLTEifSx7IlgtQW16LUNyZWRlbnRpYWwiOiJBS0lBMjZEQVJCVFhXUE9CVjJTSS8yMDI2MTEyMi91cy1lYXN0LTIvczMvYXdzNF9yZXF1ZXN0In0seyJYLUFtei1EYXRlIjoiMjAyNjExMjJUMDYyNDA4WiJ9LFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLDYwNiw2MDZdLFsiZXEiLCIkeC1hbXotY2hlY2tzdW0tc2hhMjU2IiwiREE2ckQ5Q1lLL3ZSQy9EdnpBK3lIUEVrSmp3TW5kT05HK0JTNWE1ZFBkcz0iXSx7ImtleSI6IjU4OTlkYzg4LTUwYmYtNDhjNC05ZTA1LWUzODQzYWFjODIyMS81NmEzOTljMS1lNWE1LTQwMjctYTVjNC1mN2QxODA3YzJhNDEvMGMwZWFiMGZkMDk4MmJmYmQxMGJmMGVmY2MwZmIyMWNmMTI0MjYzYzBjOWRkMzhkMWJlMDUyZTVhZTVkM2RkYi9BRFItMDA3X3NldHRsZW1lbnRfY3V0b2ZmX2FuZF9ob2xpZGF5X3dpbmRvd3MubWQifV0sImV4cGlyYXRpb24iOiIyMDI2LTExLTIyVDA2OjI5OjA4WiJ9",
-        "x-amz-checksum-sha256": "DA6rD9CYK/vRC/DvzA+yHPEkJjwMndONG+BS5a5dPds="
-      },
       "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0c0eab0fd0982bfbd10bf0efcc0fb21cf124263c0c9dd38d1be052e5ae5d3ddb/ADR-007_settlement_cutoff_and_holiday_windows.md",
       "already_uploaded": false
     },

@@ -62,7 +62,7 @@ export function TracesView({ data }: TracesViewProps) {
         <div>
           <h1 className="type-page text-ink">Trace, Memory & KB Explorer</h1>
           <p className="type-body mt-1 text-muted">
-            Full audit export across {conversations.length} conversations (0 fetch errors), {data.exported_traces.memories.total} stored memories, and {kbFiles.length} plain-text KB files.
+            Full audit export across {data.traces_fetched_ok ?? conversations.length}/{data.traces_attempted ?? conversations.length} conversations ({data.fetch_errors_count ?? 0} fetch errors), {data.exported_traces.memories.total} stored memories, and {kbFiles.length} plain-text KB files ({formatShortTimestamp(data.exported_at)}).
           </p>
         </div>
         <div className="flex flex-wrap gap-1.5">

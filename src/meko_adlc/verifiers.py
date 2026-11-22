@@ -5,7 +5,10 @@ from __future__ import annotations
 import ast
 import hashlib
 import hmac
+import json
 import re
+import subprocess
+import sys
 import time
 from typing import Any
 
@@ -106,6 +109,93 @@ def verify_sql_constraint_migration(code: str) -> dict[str, Any]:
     return {"passed": len(v) == 0, "rule_violations": v, "details": {"sql_len": len(sql)}}
 
 
+
+_DISALLOWED_RUNTIME_IMPORTS = frozenset({
+    "os",
+    "subprocess",
+    "sys",
+    "socket",
+    "urllib",
+    "http",
+    "pathlib",
+    "shutil",
+    "ctypes",
+    "importlib",
+    "builtins",
+    "io",
+    "signal",
+    "multiprocessing",
+    "threading",
+    "pickle",
+})
+_DISALLOWED_RUNTIME_CALLS = frozenset({
+    "open",
+    "eval",
+    "exec",
+    "__import__",
+    "compile",
+    "getattr",
+    "setattr",
+    "delattr",
+    "globals",
+    "locals",
+})
+
+
+def _check_python_ast_safe_for_runtime(tree: ast.AST) -> list[str]:
+    """Reject dangerous stdlib imports or dynamic builtins before isolated runtime execution."""
+    violations: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                root = alias.name.split(".", 1)[0]
+                if root in _DISALLOWED_RUNTIME_IMPORTS:
+                    violations.append(f"SECURITY: disallowed import `{root}` in verified candidate")
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            root = node.module.split(".", 1)[0]
+            if root in _DISALLOWED_RUNTIME_IMPORTS:
+                violations.append(f"SECURITY: disallowed import `{root}` in verified candidate")
+        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            if node.func.id in _DISALLOWED_RUNTIME_CALLS:
+                violations.append(f"SECURITY: disallowed call `{node.func.id}()` in verified candidate")
+    return sorted(set(violations))
+
+
+def _run_isolated_runtime_check(src: str, harness_code: str, timeout_s: float = 3.0) -> list[str]:
+    """Execute candidate Python + assertions inside an isolated `-I -S` child process (never in-process)."""
+    runner = (
+        "import json\n"
+        "try:\n"
+        "    import resource\n"
+        "    resource.setrlimit(resource.RLIMIT_CPU, (2, 2))\n"
+        "except Exception:\n"
+        "    pass\n"
+        f"src = {json.dumps(src)}\n"
+        f"harness = {json.dumps(harness_code)}\n"
+        "ns = {}\n"
+        "exec(compile(src, '<candidate>', 'exec'), ns)\n"
+        "exec(compile(harness, '<harness>', 'exec'), ns)\n"
+    )
+    try:
+        proc = subprocess.run(
+            [sys.executable, "-I", "-S", "-c", runner],
+            env={},
+            timeout=timeout_s,
+            capture_output=True,
+            text=True,
+        )
+    except subprocess.TimeoutExpired:
+        return [f"RUNTIME: isolated verification timed out after {timeout_s}s"]
+    except Exception as exc:
+        return [f"RUNTIME: isolated runner failure: {type(exc).__name__}: {exc}"]
+
+    if proc.returncode != 0:
+        err_lines = [ln.strip() for ln in (proc.stderr or proc.stdout or "").splitlines() if ln.strip()]
+        summary = err_lines[-1] if err_lines else f"exit={proc.returncode}"
+        return [f"RUNTIME: {summary[:220]}"]
+    return []
+
+
 def verify_fee_and_refund_module(code: str) -> dict[str, Any]:
     src = strip_markdown_fences(code)
     v: list[str] = []
@@ -123,19 +213,23 @@ def verify_fee_and_refund_module(code: str) -> dict[str, Any]:
     if not re.search(r"(refundable|remaining|already_refunded|total_refunded|original|settled)", src, re.I):
         v.append("ADR-002.4: cumulative refund cap check missing")
 
-    ns: dict[str, Any] = {}
     if not v:
-        try:
-            exec(compile(tree, "<task>", "exec"), ns)
-            fn = next((obj for name, obj in ns.items() if callable(obj) and "fee" in name.lower()), None)
-            if fn is not None:
-                from decimal import Decimal
-                assert fn(1000, Decimal("25")) == 2
-                assert fn(1000, Decimal("35")) == 4
-        except Exception as exc:
-            v.append(f"RUNTIME: {type(exc).__name__}: {exc}")
+        v.extend(_check_python_ast_safe_for_runtime(tree))
+    if not v:
+        fee_harness = '''
+from decimal import Decimal
+fn = next((obj for name, obj in list(globals().items()) if callable(obj) and "fee" in name.lower()), None)
+if fn is not None:
+    assert fn(1000, Decimal("25")) == 2
+    assert fn(1000, Decimal("35")) == 4
+'''
+        v.extend(_run_isolated_runtime_check(src, fee_harness))
 
-    return {"passed": len(v) == 0, "rule_violations": v, "details": {}}
+    return {
+        "passed": len(v) == 0,
+        "rule_violations": v,
+        "details": {"verification_mode": "static_plus_isolated_subprocess"},
+    }
 
 
 def verify_double_entry_idempotency(code: str) -> dict[str, Any]:
@@ -202,22 +296,24 @@ def verify_pii_redactor(code: str) -> dict[str, Any]:
         if req_field not in src:
             v.append(f"ADR-004.3: RFC 9457 error builder missing `{req_field}`")
 
-    ns: dict[str, Any] = {}
     if not v:
-        try:
-            exec(compile(tree, "<task>", "exec"), ns)
-            redact_fn = next((obj for name, obj in ns.items() if callable(obj) and "redact" in name.lower()), None)
-            if redact_fn is None:
-                v.append("RUNTIME: no redact* callable found")
-            else:
-                out = redact_fn({"email": "x@y.com", "nested": [{"token": "tok_123", "iban": "DE8912345678"}]})
-                assert out["email"] == "***REDACTED***"
-                assert out["nested"][0]["token"] == "***REDACTED***"
-                assert out["nested"][0]["iban"].endswith("5678") and "DE89" not in out["nested"][0]["iban"]
-        except Exception as exc:
-            v.append(f"RUNTIME: {type(exc).__name__}: {exc}")
+        v.extend(_check_python_ast_safe_for_runtime(tree))
+    if not v:
+        pii_harness = '''
+redact_fn = next((obj for name, obj in list(globals().items()) if callable(obj) and "redact" in name.lower()), None)
+assert redact_fn is not None, "no redact* callable found"
+out = redact_fn({"email": "x@y.com", "nested": [{"token": "tok_123", "iban": "DE8912345678"}]})
+assert out["email"] == "***REDACTED***"
+assert out["nested"][0]["token"] == "***REDACTED***"
+assert out["nested"][0]["iban"].endswith("5678") and "DE89" not in out["nested"][0]["iban"]
+'''
+        v.extend(_run_isolated_runtime_check(src, pii_harness))
 
-    return {"passed": len(v) == 0, "rule_violations": v, "details": {}}
+    return {
+        "passed": len(v) == 0,
+        "rule_violations": v,
+        "details": {"verification_mode": "static_plus_isolated_subprocess"},
+    }
 
 
 def verify_retry_circuit_breaker(code: str) -> dict[str, Any]:

@@ -14,7 +14,9 @@
     "tokens": {
       "input": 1062,
       "output": 316
-    }
+    },
+    "provenance": "historical_captured_session",
+    "provenance_note": "Captured in live Mac mini session aa0058c5affc4a17b857c03705d25df9; note that original CLI ran before automated linked_agent1_report forwarding was wired."
   },
   "agent2_codex": {
     "conversation_id": "58a8e4ff0f8448aaa0eed0bf60c5914c",
@@ -32,7 +34,9 @@
       "in": 1363,
       "out": 3975
     },
-    "code_preview": "\"\"\"Static lock-safety checks for ledger-service Postgres migrations.\n\nHeuristics only: this scans SQL with a hand-rolled lexer, not a real grammar.\nTuned for the ledger-service style (plain DDL, DO $$ ... $$ guards, no\ndynamic SQL). Anything it cannot parse is reported, never assumed safe.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport re\n\nMAX_LOCK_TIMEOUT_MS = 10_000\nMAX_STATEMENT_TIMEOUT_MS = 600_000\n\n_IDENT = r'(?:\"(?:[^\"]|\"\")+\"|[A-Za-z_][A-Za-z0-9_$]*)'\n_QUALIFIED = rf\"{_IDENT}(?:\\s*\\.\\s*{_IDENT})?\"\n\n_UNIT_MS = {\n    \"us\": 1e-3, \"usec\": 1e-3, \"usecs\": 1e-3,\n    \"ms\": 1.0, \"msec\": 1.0, \"ms"
+    "code_preview": "\"\"\"Static lock-safety checks for ledger-service Postgres migrations.\n\nHeuristics only: this scans SQL with a hand-rolled lexer, not a real grammar.\nTuned for the ledger-service style (plain DDL, DO $$ ... $$ guards, no\ndynamic SQL). Anything it cannot parse is reported, never assumed safe.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport re\n\nMAX_LOCK_TIMEOUT_MS = 10_000\nMAX_STATEMENT_TIMEOUT_MS = 600_000\n\n_IDENT = r'(?:\"(?:[^\"]|\"\")+\"|[A-Za-z_][A-Za-z0-9_$]*)'\n_QUALIFIED = rf\"{_IDENT}(?:\\s*\\.\\s*{_IDENT})?\"\n\n_UNIT_MS = {\n    \"us\": 1e-3, \"usec\": 1e-3, \"usecs\": 1e-3,\n    \"ms\": 1.0, \"msec\": 1.0, \"ms",
+    "artifact_sha256_matches_agent1_trace_output": true,
+    "trace_output_sha256": "069ba98c439b7d766450de3067400808847584a6c456bce911e1d8ab74bdd0b4"
   },
   "agent3_review": {
     "conversation_id": "5d443d7ca2ed4991b30d7de0e0dc7103",

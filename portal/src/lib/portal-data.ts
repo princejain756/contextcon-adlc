@@ -39,6 +39,7 @@ export interface BenchmarkSummary {
     prompt_tokens: number;
     avg_tokens_per_task: number;
     avg_latency_s: number;
+    total_latency_s?: number;
     reference_cost_usd: number;
     passed_count: number;
     total_violations: number;
@@ -48,6 +49,8 @@ export interface BenchmarkSummary {
     prompt_tokens: number;
     avg_tokens_per_task: number;
     avg_latency_s: number;
+    completed_attempt_total_latency_s?: number;
+    completed_attempt_avg_latency_s?: number;
     reference_cost_usd: number;
     passed_count: number;
     total_violations: number;
@@ -58,6 +61,10 @@ export interface BenchmarkSummary {
     cost_reduction_pct: number;
     latency_change_pct: number;
   };
+  retry_inclusive_lower_bound_total_s?: number;
+  retry_inclusive_lower_bound_avg_s?: number;
+  retry_inclusive_lower_bound_change_pct?: number;
+  timing_note?: string;
 }
 
 export interface DriftFinding {
@@ -156,15 +163,19 @@ export interface PortalSnapshot {
     agent1_claude: {
       conversation_id: string;
       agent_id: string;
+      provenance?: string;
+      provenance_note?: string;
       memory_ids: string[];
       artifact_hash: string;
-      verifier: { passed: boolean; rule_violations: string[] };
-      tokens: { input: number; output: number };
+      verifier: { passed: boolean; rule_violations: string[] } | null;
+      tokens: { input: number; output: number } | null;
     };
     agent2_codex: {
       conversation_id: string;
       agent_id: string;
       artifact_access_mode: string;
+      artifact_sha256_matches_agent1_trace_output?: boolean;
+      artifact_sha256_verified?: boolean;
       sql_check: { passed: boolean; rule_violations: string[]; details: { sql_len: number } };
       elapsed_s: number;
       tokens: { in: number; out: number };
@@ -184,6 +195,13 @@ export interface PortalSnapshot {
     conversation_id: string;
     weak_query: string;
     log_id: string;
+    status_after?: {
+      quality: { pct: number; potential_pct: number; searches: number; high: number };
+      breakdown: {
+        totals: { avg_score: number; avg_elapsed_ms: number; searches: number; zero_results: number };
+        by_band?: { high: number; mid: number; low: number };
+      };
+    };
     selflearning_verify: {
       test_prompt_id: string;
       query: string;
@@ -205,8 +223,13 @@ export interface PortalSnapshot {
     summary: BenchmarkSummary;
     tasks: BenchmarkTaskRow[];
   };
+  exported_at?: string;
   traces_count: number;
+  traces_attempted?: number;
+  traces_fetched_ok?: number;
+  fetch_errors_count?: number;
   exported_traces: {
+    exported_at?: string;
     datapack_name: string;
     datapack_id: string;
     datapack: {

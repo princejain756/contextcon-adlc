@@ -162,15 +162,22 @@ export function BenchmarkView({ summary, tasks }: BenchmarkViewProps) {
                   {formatUSD(summary.meko.reference_cost_usd, 4)}
                 </td>
                 <td className="type-table-cell numeral px-3 py-2.5 text-right">
-                  {formatSeconds(summary.baseline.avg_latency_s, 1)} / {formatSeconds(summary.meko.avg_latency_s, 1)} avg
+                  {formatSeconds(summary.baseline.avg_latency_s, 1)} / {formatSeconds(summary.meko.avg_latency_s, 1)} avg ({formatSeconds(summary.retry_inclusive_lower_bound_avg_s ?? summary.meko.avg_latency_s, 1)} w/ retry)
                 </td>
                 <td className="type-table-cell px-3 py-2.5">
-                  9/10 vs 10/10
+                  {summary.baseline.passed_count}/{summary.task_count} vs {summary.meko.passed_count}/{summary.task_count}
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+        {summary.timing_note && (
+          <div className="border-t border-line bg-subtle px-3.5 py-2.5">
+            <p className="type-meta text-muted">
+              <strong className="text-ink">Timing &amp; Token Proxy Note:</strong> {summary.timing_note} Tokens counted via local `{summary.tokenizer}` proxy using reference rates ({summary.reference_pricing}).
+            </p>
+          </div>
+        )}
       </div>
 
       {selected && (

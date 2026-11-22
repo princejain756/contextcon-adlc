@@ -158,19 +158,30 @@ export function AmpSelfLearnView({ amp, selflearn, telemetry }: AmpSelfLearnView
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-3 gap-2 rounded-lg border border-line bg-subtle p-3 text-center">
-            <div>
-              <p className="type-kpi-label text-faint">Searches</p>
-              <p className="type-section numeral text-ink">{telemetry.breakdown.totals.searches}</p>
+          <div className="mt-4 space-y-2.5">
+            <div className="rounded-lg border border-line bg-subtle p-3">
+              <p className="type-kpi-label text-faint">Scope A: 7-Day Exported Datapack Aggregate (All Searches)</p>
+              <div className="mt-2 grid grid-cols-3 gap-2 text-center">
+                <div>
+                  <p className="type-kpi-label text-faint">Searches</p>
+                  <p className="type-section numeral text-ink">{telemetry.breakdown.totals.searches}</p>
+                </div>
+                <div>
+                  <p className="type-kpi-label text-faint">Zero Hits</p>
+                  <p className="type-section numeral text-ink">{telemetry.breakdown.totals.zero_results}</p>
+                </div>
+                <div>
+                  <p className="type-kpi-label text-faint">Avg Score</p>
+                  <p className="type-section numeral text-ink">{telemetry.breakdown.totals.avg_score.toFixed(4)}</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="type-kpi-label text-faint">Zero Hits</p>
-              <p className="type-section numeral text-ink">{telemetry.breakdown.totals.zero_results}</p>
-            </div>
-            <div>
-              <p className="type-kpi-label text-faint">Avg Score</p>
-              <p className="type-section numeral text-ink">{telemetry.breakdown.totals.avg_score.toFixed(4)}</p>
-            </div>
+            {selflearn.status_after?.breakdown?.totals && (
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line px-3 py-2 text-xs text-muted">
+                <span>Scope B: Immediate <span className="font-code text-ink">status_after</span> window ({selflearn.status_after.breakdown.totals.searches} searches)</span>
+                <span className="numeral font-medium text-ink">avg {selflearn.status_after.breakdown.totals.avg_score.toFixed(4)} | high {selflearn.status_after.quality.high}</span>
+              </div>
+            )}
           </div>
 
           <div className="mt-4">

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import sys
 import time
@@ -158,13 +159,26 @@ def _run_cli_with_retry(
     timeout_s: float = 240.0,
     max_retries: int = 1,
     cwd: str = "/tmp",
-) -> tuple[str, float, int]:
-    """Run CLI prompt with bounded retry on subprocess timeout."""
+) -> tuple[str, float, float, int, list[dict[str, Any]]]:
+    """Run CLI prompt with monotonic retry-inclusive timing and per-attempt diagnostics."""
+    t_total0 = time.perf_counter()
+    attempt_timings: list[dict[str, Any]] = []
     for attempt in range(max_retries + 1):
+        t_attempt0 = time.perf_counter()
         try:
             out, elapsed = run_cli_prompt(cmd, prompt, timeout_s=timeout_s, cwd=cwd)
-            return out, elapsed, attempt
-        except subprocess.TimeoutExpired:
+            attempt_timings.append({"attempt": attempt + 1, "status": "ok", "elapsed_s": round(elapsed, 3)})
+            total_elapsed = time.perf_counter() - t_total0
+            return out, elapsed, total_elapsed, attempt, attempt_timings
+        except subprocess.TimeoutExpired as exc:
+            timed_out_s = getattr(exc, "timeout", None) or (time.perf_counter() - t_attempt0)
+            attempt_timings.append(
+                {
+                    "attempt": attempt + 1,
+                    "status": "timeout",
+                    "elapsed_s": round(float(timed_out_s), 3),
+                }
+            )
             if attempt >= max_retries:
                 raise
             print(
@@ -192,7 +206,9 @@ def _build_benchmark_summary(
     b_viol = sum(r["baseline"]["violation_count"] for r in ordered_results)
     m_viol = sum(r["meko"]["violation_count"] for r in ordered_results)
     b_lat = sum(r["baseline"]["latency_s"] for r in ordered_results)
+    b_e2e_lat = sum(r["baseline"].get("end_to_end_latency_s", r["baseline"]["latency_s"]) for r in ordered_results)
     m_lat = sum(r["meko"]["total_latency_s"] for r in ordered_results)
+    m_e2e_lat = sum(r["meko"].get("end_to_end_total_latency_s", r["meko"]["total_latency_s"]) for r in ordered_results)
     b_cost = round(sum(r["baseline"]["reference_cost_usd"] for r in ordered_results), 6)
     m_cost = round(sum(r["meko"]["reference_cost_usd"] for r in ordered_results), 6)
 
@@ -212,6 +228,7 @@ def _build_benchmark_summary(
             "prompt_tokens": b_in_sum,
             "avg_tokens_per_task": round(b_tot_tok / max(1, n), 1),
             "avg_latency_s": round(b_lat / max(1, n), 3),
+            "end_to_end_avg_latency_s": round(b_e2e_lat / max(1, n), 3),
             "reference_cost_usd": b_cost,
             "passed_count": b_pass,
             "total_violations": b_viol,
@@ -221,6 +238,7 @@ def _build_benchmark_summary(
             "prompt_tokens": m_in_sum,
             "avg_tokens_per_task": round(m_tot_tok / max(1, n), 1),
             "avg_latency_s": round(m_lat / max(1, n), 3),
+            "end_to_end_avg_latency_s": round(m_e2e_lat / max(1, n), 3),
             "reference_cost_usd": m_cost,
             "passed_count": m_pass,
             "total_violations": m_viol,
@@ -230,6 +248,7 @@ def _build_benchmark_summary(
             "total_token_reduction_pct": round((1.0 - m_tot_tok / max(1, b_tot_tok)) * 100.0, 2),
             "cost_reduction_pct": round((1.0 - m_cost / max(1e-9, b_cost)) * 100.0, 2),
             "latency_change_pct": round((m_lat - b_lat) / max(1e-9, b_lat) * 100.0, 2),
+            "end_to_end_latency_change_pct": round((m_e2e_lat - b_e2e_lat) / max(1e-9, b_e2e_lat) * 100.0, 2),
         },
     }
 
@@ -285,7 +304,8 @@ def run_paired_benchmark(
         )
         cid = str(conv.get("conversation_id") or conv.get("id"))
 
-    cmd = ["commandcode", "-p", "-m", "deepseek/deepseek-v4.1-flash", "--no-session", "--effort", "low"]
+    commandcode_bin = shutil.which("commandcode") or "commandcode"
+    cmd = [commandcode_bin, "-p", "-m", "deepseek/deepseek-v4.1-flash", "--no-session", "--effort", "low"]
 
     for t in TASKS:
         if wanted_ids is not None and t.task_id not in wanted_ids:
@@ -299,7 +319,7 @@ def run_paired_benchmark(
             + baseline_ctx
             + f"\n\n### TASK {t.task_id}: {t.title}\n{t.prompt}"
         )
-        base_out, base_lat, base_retries = _run_cli_with_retry(cmd, base_prompt, timeout_s=timeout_s, max_retries=1, cwd="/tmp")
+        base_out, base_lat, base_e2e_lat, base_retries, base_timings = _run_cli_with_retry(cmd, base_prompt, timeout_s=timeout_s, max_retries=1, cwd="/tmp")
         base_in_tok = count_tokens(base_prompt)
         base_out_tok = count_tokens(base_out)
         base_ver = verify_task_output(t.verifier_kind, base_out)
@@ -318,7 +338,7 @@ def run_paired_benchmark(
             + meko_ctx_str
             + f"\n\n### TASK {t.task_id}: {t.title}\n{t.prompt}"
         )
-        meko_out, meko_llm_lat, meko_retries = _run_cli_with_retry(cmd, meko_prompt, timeout_s=timeout_s, max_retries=1, cwd="/tmp")
+        meko_out, meko_llm_lat, meko_e2e_llm_lat, meko_retries, meko_timings = _run_cli_with_retry(cmd, meko_prompt, timeout_s=timeout_s, max_retries=1, cwd="/tmp")
         meko_in_tok = count_tokens(meko_prompt)
         meko_out_tok = count_tokens(meko_out)
         meko_ver = verify_task_output(t.verifier_kind, meko_out)
@@ -347,6 +367,8 @@ def run_paired_benchmark(
                 "completion_tokens": base_out_tok,
                 "total_tokens": base_in_tok + base_out_tok,
                 "latency_s": round(base_lat, 3),
+                "end_to_end_latency_s": round(base_e2e_lat, 3),
+                "attempt_timings": base_timings,
                 "retries": base_retries,
                 "reference_cost_usd": _ref_cost_usd(base_in_tok, base_out_tok),
                 "passed": base_ver["passed"],
@@ -360,7 +382,10 @@ def run_paired_benchmark(
                 "total_tokens": meko_in_tok + meko_out_tok,
                 "search_latency_s": round(search_lat, 3),
                 "llm_latency_s": round(meko_llm_lat, 3),
+                "end_to_end_llm_latency_s": round(meko_e2e_llm_lat, 3),
                 "total_latency_s": round(search_lat + meko_llm_lat, 3),
+                "end_to_end_total_latency_s": round(search_lat + meko_e2e_llm_lat, 3),
+                "attempt_timings": meko_timings,
                 "retries": meko_retries,
                 "reference_cost_usd": _ref_cost_usd(meko_in_tok, meko_out_tok),
                 "passed": meko_ver["passed"],

@@ -1,10 +1,11 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, Clock, Database, GitBranch, Search, ShieldCheck } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock, Database, ExternalLink, GitBranch, Play, Search, ShieldCheck } from "lucide-react";
 import {
   formatCount,
   formatPct,
   formatSeconds,
+  formatShortTimestamp,
   formatUSD,
 } from "@/lib/display-labels";
 import { getBenchmarkCompletionTotals, PortalSnapshot } from "@/lib/portal-data";
@@ -14,9 +15,14 @@ interface OverviewViewProps {
   data: PortalSnapshot;
   onNavigate: (tab: PortalTabId) => void;
   onOpenJudgeBrief: () => void;
+  onOpenDemoVideo: () => void;
 }
 
-export function OverviewView({ data, onNavigate, onOpenJudgeBrief }: OverviewViewProps) {
+export function OverviewView({ data, onNavigate, onOpenJudgeBrief, onOpenDemoVideo }: OverviewViewProps) {
+  const memTotal = data.exported_traces.memories.total;
+  const convCount = data.exported_traces.conversations.length;
+  const okTraces = data.traces_fetched_ok ?? convCount;
+  const errTraces = data.fetch_errors_count ?? 0;
   const summary = data.benchmark_results.summary;
   const tasks = data.benchmark_results.tasks;
   const sl = data.selflearning_report.selflearning_verify;
@@ -37,14 +43,33 @@ export function OverviewView({ data, onNavigate, onOpenJudgeBrief }: OverviewVie
             Verified evidence from live Meko Cloud MCP v3.2.4 traces, cross-machine Claude and Codex handoffs, AMP Postgres 18 copy-on-write branching, and a symmetric 10-task benchmark.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onOpenJudgeBrief}
-          className="inline-flex shrink-0 items-center gap-2 self-start rounded-lg bg-accent px-3.5 py-2 text-xs font-medium text-accent-ink hover:opacity-90 sm:self-auto"
-        >
-          2-Minute Audit Brief
-          <ArrowRight className="h-3.5 w-3.5" />
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={onOpenDemoVideo}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-line-strong bg-surface px-3 py-2 text-xs font-medium text-ink hover:bg-subtle"
+          >
+            <Play className="h-3.5 w-3.5" />
+            Watch 4:13 Demo
+          </button>
+          <a
+            href="https://github.com/princejain756/contextcon-adlc"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-line-strong bg-surface px-3 py-2 text-xs font-medium text-ink hover:bg-subtle"
+          >
+            GitHub
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+          <button
+            type="button"
+            onClick={onOpenJudgeBrief}
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-accent px-3.5 py-2 text-xs font-medium text-accent-ink hover:opacity-90"
+          >
+            2-Minute Audit Brief
+            <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
 
       <section aria-label="Primary metrics" className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
@@ -152,8 +177,8 @@ export function OverviewView({ data, onNavigate, onOpenJudgeBrief }: OverviewVie
         <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-line bg-subtle p-3">
           <Clock className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
           <p className="type-meta text-muted">
-            <strong className="font-medium text-ink">Honest Latency Tradeoff:</strong>{" "}
-            Average wall time increased +{formatPct(summary.deltas.latency_change_pct)} ({formatSeconds(summary.baseline.avg_latency_s, 3)} Baseline vs {formatSeconds(summary.meko.avg_latency_s, 3)} Meko), combining {formatSeconds(totals.mekoSearchLatency)} across 10 remote context searches with longer defensive completion outputs ({formatCount(totals.mekoCompletionTokens)} vs {formatCount(totals.baselineCompletionTokens)} completion tokens) and 1 retry on T10. Total tokens still dropped {formatPct(summary.deltas.total_token_reduction_pct)}.
+            <strong className="font-medium text-ink">Honest Latency &amp; Proxy Accounting:</strong>{" "}
+            Completed-attempt avg increased +{formatPct(summary.deltas.latency_change_pct)} ({formatSeconds(summary.baseline.avg_latency_s, 3)} Baseline vs {formatSeconds(summary.meko.avg_latency_s, 3)} Meko) from {formatSeconds(totals.mekoSearchLatency)} across 10 searches and longer defensive completion outputs ({formatCount(totals.mekoCompletionTokens)} vs {formatCount(totals.baselineCompletionTokens)} completion tokens). Including T10&apos;s 240.0s timeout retry raises Meko lower-bound avg to {formatSeconds(summary.retry_inclusive_lower_bound_avg_s ?? summary.meko.avg_latency_s, 3)} (+{formatPct(summary.retry_inclusive_lower_bound_change_pct ?? summary.deltas.latency_change_pct)}). Counts use local `cl100k_base` text estimates. Total tokens dropped {formatPct(summary.deltas.total_token_reduction_pct)}.
           </p>
         </div>
       </section>
@@ -227,14 +252,14 @@ export function OverviewView({ data, onNavigate, onOpenJudgeBrief }: OverviewVie
           <div>
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-muted" />
-              <h3 className="type-section text-ink">16 Exported Live Traces & KB</h3>
+              <h3 className="type-section text-ink">{convCount} Exported Live Traces & KB</h3>
             </div>
             <p className="type-body mt-1.5 text-muted">
-              Browse every conversation turn, explicit agent reasoning, promoted memory, and the 19 plain-text indexed corpus files ({data.seed_report.datapack.knowledge_chunk_count} chunks).
+              Browse every conversation turn, explicit agent reasoning, promoted memory, and the {data.seed_report.uploaded.length} plain-text indexed corpus files ({data.seed_report.datapack.knowledge_chunk_count} chunks).
             </p>
             <p className="type-meta numeral mt-2 text-faint">
               <CheckCircle2 className="mr-1 inline h-3.5 w-3.5 text-muted" />
-              0 trace fetch errors | 26 memories stored
+              {okTraces}/{data.traces_attempted ?? convCount} ok ({errTraces} errors) | {memTotal} memories | {formatShortTimestamp(data.exported_at)}
             </p>
           </div>
           <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-faint" />

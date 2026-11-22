@@ -1,0 +1,428 @@
+{
+  "conversation_id": "2f654685283c4d488050c2e1bb33d2d7",
+  "deleted_old_doc_ids": [],
+  "uploaded": [
+    {
+      "source_file": "ADR-001_zero_downtime_postgres_migrations.md",
+      "filename": "ADR-001_zero_downtime_postgres_migrations.txt",
+      "bytes": 3202,
+      "tokens_cl100k": 694,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/d91a6c3d5543e3b5dfd7155e1dbe1334b39969304dc2493cfd010f8b71d24db9/ADR-001_zero_downtime_postgres_migrations.txt",
+      "already_uploaded": true,
+      "status": {
+        "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+        "url": "",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/d91a6c3d5543e3b5dfd7155e1dbe1334b39969304dc2493cfd010f8b71d24db9/ADR-001_zero_downtime_postgres_migrations.txt",
+        "already_uploaded": true,
+        "existing_filename": "ADR-001_zero_downtime_postgres_migrations.txt"
+      }
+    },
+    {
+      "source_file": "ADR-002_ledger_idempotency_and_precision.md",
+      "filename": "ADR-002_ledger_idempotency_and_precision.txt",
+      "bytes": 2544,
+      "tokens_cl100k": 587,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/8721c50a99390c4db79f35208d0a7613b36d91d212789f3d90e042a5114882bb/ADR-002_ledger_idempotency_and_precision.txt",
+      "already_uploaded": true,
+      "status": {
+        "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+        "url": "",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/8721c50a99390c4db79f35208d0a7613b36d91d212789f3d90e042a5114882bb/ADR-002_ledger_idempotency_and_precision.txt",
+        "already_uploaded": true,
+        "existing_filename": "ADR-002_ledger_idempotency_and_precision.txt"
+      }
+    },
+    {
+      "source_file": "ADR-003_webhook_hmac_and_replay_protection.md",
+      "filename": "ADR-003_webhook_hmac_and_replay_protection.txt",
+      "bytes": 1914,
+      "tokens_cl100k": 432,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0a1af18f7a04f3cb593ac53e6a2314ba7230e23da3bab33ce43c8c43564149b4/ADR-003_webhook_hmac_and_replay_protection.txt",
+      "already_uploaded": true,
+      "status": {
+        "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+        "url": "",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0a1af18f7a04f3cb593ac53e6a2314ba7230e23da3bab33ce43c8c43564149b4/ADR-003_webhook_hmac_and_replay_protection.txt",
+        "already_uploaded": true,
+        "existing_filename": "ADR-003_webhook_hmac_and_replay_protection.txt"
+      }
+    },
+    {
+      "source_file": "ADR-004_pii_redaction_and_structured_logging.md",
+      "filename": "ADR-004_pii_redaction_and_structured_logging.txt",
+      "bytes": 2008,
+      "tokens_cl100k": 465,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/ba243277ae58ba9dc5c51387c7fc06bae749367f421b91a276dd765ac87964cd/ADR-004_pii_redaction_and_structured_logging.txt",
+      "already_uploaded": true,
+      "status": {
+        "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+        "url": "",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/ba243277ae58ba9dc5c51387c7fc06bae749367f421b91a276dd765ac87964cd/ADR-004_pii_redaction_and_structured_logging.txt",
+        "already_uploaded": true,
+        "existing_filename": "ADR-004_pii_redaction_and_structured_logging.txt"
+      }
+    },
+    {
+      "source_file": "ADR-005_bounded_retry_and_circuit_breaker.md",
+      "filename": "ADR-005_bounded_retry_and_circuit_breaker.txt",
+      "bytes": 1859,
+      "tokens_cl100k": 477,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/f8e212f0d519f2ee4c73f829ec981459e10fb1ee3f2bbc8ba06a152838f41990/ADR-005_bounded_retry_and_circuit_breaker.txt",
+      "already_uploaded": true,
+      "status": {
+        "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+        "url": "",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/f8e212f0d519f2ee4c73f829ec981459e10fb1ee3f2bbc8ba06a152838f41990/ADR-005_bounded_retry_and_circuit_breaker.txt",
+        "already_uploaded": true,
+        "existing_filename": "ADR-005_bounded_retry_and_circuit_breaker.txt"
+      }
+    },
+    {
+      "source_file": "ADR-006_rbac_scope_and_tenant_isolation.md",
+      "filename": "ADR-006_rbac_scope_and_tenant_isolation.txt",
+      "bytes": 1928,
+      "tokens_cl100k": 435,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/da5a584d1ae96402529198d0fe9533cd01a0a99e7faa08ec65486515f6fe198a/ADR-006_rbac_scope_and_tenant_isolation.txt",
+      "already_uploaded": true,
+      "status": {
+        "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+        "url": "",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/da5a584d1ae96402529198d0fe9533cd01a0a99e7faa08ec65486515f6fe198a/ADR-006_rbac_scope_and_tenant_isolation.txt",
+        "already_uploaded": true,
+        "existing_filename": "ADR-006_rbac_scope_and_tenant_isolation.txt"
+      }
+    },
+    {
+      "source_file": "INC-2026-041_lock_queue_outage_postmortem.md",
+      "filename": "INC-2026-041_lock_queue_outage_postmortem.txt",
+      "bytes": 1432,
+      "tokens_cl100k": 328,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/c82dad7678b75c8910ec528eda6b28d64522ff55e802707ef954193f60033ceb/INC-2026-041_lock_queue_outage_postmortem.txt",
+      "already_uploaded": true,
+      "status": {
+        "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+        "url": "",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/c82dad7678b75c8910ec528eda6b28d64522ff55e802707ef954193f60033ceb/INC-2026-041_lock_queue_outage_postmortem.txt",
+        "already_uploaded": true,
+        "existing_filename": "INC-2026-041_lock_queue_outage_postmortem.txt"
+      }
+    },
+    {
+      "source_file": "INC-2026-078_float_rounding_and_webhook_replay.md",
+      "filename": "INC-2026-078_float_rounding_and_webhook_replay.txt",
+      "bytes": 1357,
+      "tokens_cl100k": 311,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/d7aa3a60a1eea58d09ec311eda126bc7dd7b520d929813b5dad423f296279aba/INC-2026-078_float_rounding_and_webhook_replay.txt",
+      "already_uploaded": true,
+      "status": {
+        "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+        "url": "",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/d7aa3a60a1eea58d09ec311eda126bc7dd7b520d929813b5dad423f296279aba/INC-2026-078_float_rounding_and_webhook_replay.txt",
+        "already_uploaded": true,
+        "existing_filename": "INC-2026-078_float_rounding_and_webhook_replay.txt"
+      }
+    },
+    {
+      "source_file": "SERVICE_CONTRACTS_AND_RUNBOOKS.md",
+      "filename": "SERVICE_CONTRACTS_AND_RUNBOOKS.txt",
+      "bytes": 2882,
+      "tokens_cl100k": 665,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/fb1fe1aaab2fae753042b4ffb337de5f2086c509c8c67b061fe399e177cf37ee/SERVICE_CONTRACTS_AND_RUNBOOKS.txt",
+      "already_uploaded": true,
+      "status": {
+        "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+        "url": "",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/fb1fe1aaab2fae753042b4ffb337de5f2086c509c8c67b061fe399e177cf37ee/SERVICE_CONTRACTS_AND_RUNBOOKS.txt",
+        "already_uploaded": true,
+        "existing_filename": "SERVICE_CONTRACTS_AND_RUNBOOKS.txt"
+      }
+    },
+    {
+      "source_file": "MEKO.md",
+      "filename": "MEKO.txt",
+      "bytes": 1385,
+      "tokens_cl100k": 304,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/1bfc21849f3e6f009453a20cbb3e0b2ad76cb095b0d45532fb36066c8fdc8545/MEKO.txt",
+      "already_uploaded": true,
+      "status": {
+        "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+        "url": "",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/1bfc21849f3e6f009453a20cbb3e0b2ad76cb095b0d45532fb36066c8fdc8545/MEKO.txt",
+        "already_uploaded": true,
+        "existing_filename": "MEKO.txt"
+      }
+    },
+    {
+      "source_file": "target_repo/ledger_service/__init__.py",
+      "filename": "code_ledger_service___init__.txt",
+      "bytes": 135,
+      "tokens_cl100k": 28,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/5ef933f11a774b943d29191816fa4c3de5fa3043b00c5edf0198eac839eb8d10/code_ledger_service___init__.txt",
+      "already_uploaded": false,
+      "status": {
+        "index_name": "datapacks.knowledge_bases",
+        "source_uri": "s3://meko-kb-uploads-launch-1/5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/",
+        "document_name": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/5ef933f11a774b943d29191816fa4c3de5fa3043b00c5edf0198eac839eb8d10/code_ledger_service___init__.txt",
+        "document_status": "COMPLETED",
+        "chunks_processed": 2,
+        "document": {
+          "chunks_processed": 2,
+          "uploaded_at": "2026-11-22T07:06:33Z",
+          "size_bytes": 135,
+          "status": "COMPLETED"
+        },
+        "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/5ef933f11a774b943d29191816fa4c3de5fa3043b00c5edf0198eac839eb8d10/code_ledger_service___init__.txt",
+        "filename": "code_ledger_service___init__.txt",
+        "state": "completed",
+        "message": "The file is indexed and searchable."
+      }
+    },
+    {
+      "source_file": "target_repo/ledger_service/errors.py",
+      "filename": "code_ledger_service_errors.txt",
+      "bytes": 1682,
+      "tokens_cl100k": 412,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/1bfbf7cbdd23ed09d0ff7dc9e04406437cd385c0000a56f5e163a36f78949a10/code_ledger_service_errors.txt",
+      "already_uploaded": false,
+      "status": {
+        "index_name": "datapacks.knowledge_bases",
+        "source_uri": "s3://meko-kb-uploads-launch-1/5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/",
+        "document_name": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/1bfbf7cbdd23ed09d0ff7dc9e04406437cd385c0000a56f5e163a36f78949a10/code_ledger_service_errors.txt",
+        "document_status": "COMPLETED",
+        "chunks_processed": 12,
+        "document": {
+          "chunks_processed": 12,
+          "uploaded_at": "2026-11-22T07:06:35Z",
+          "size_bytes": 1682,
+          "status": "COMPLETED"
+        },
+        "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/1bfbf7cbdd23ed09d0ff7dc9e04406437cd385c0000a56f5e163a36f78949a10/code_ledger_service_errors.txt",
+        "filename": "code_ledger_service_errors.txt",
+        "state": "completed",
+        "message": "The file is indexed and searchable."
+      }
+    },
+    {
+      "source_file": "target_repo/ledger_service/ledger.py",
+      "filename": "code_ledger_service_ledger.txt",
+      "bytes": 4853,
+      "tokens_cl100k": 1116,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0312bd4365385d33bb2d87cab85a3ad0c802283934ef9731b19c10014a1ec020/code_ledger_service_ledger.txt",
+      "already_uploaded": false,
+      "status": {
+        "index_name": "datapacks.knowledge_bases",
+        "source_uri": "s3://meko-kb-uploads-launch-1/5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/",
+        "document_name": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0312bd4365385d33bb2d87cab85a3ad0c802283934ef9731b19c10014a1ec020/code_ledger_service_ledger.txt",
+        "document_status": "COMPLETED",
+        "chunks_processed": 17,
+        "document": {
+          "chunks_processed": 17,
+          "uploaded_at": "2026-11-22T07:06:37Z",
+          "size_bytes": 4853,
+          "status": "COMPLETED"
+        },
+        "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0312bd4365385d33bb2d87cab85a3ad0c802283934ef9731b19c10014a1ec020/code_ledger_service_ledger.txt",
+        "filename": "code_ledger_service_ledger.txt",
+        "state": "completed",
+        "message": "The file is indexed and searchable."
+      }
+    },
+    {
+      "source_file": "target_repo/ledger_service/logging_utils.py",
+      "filename": "code_ledger_service_logging_utils.txt",
+      "bytes": 2867,
+      "tokens_cl100k": 728,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/4308f8668af8568c46fa663e2e9a7ffced61fe865d7edf803e03eca8733d1d27/code_ledger_service_logging_utils.txt",
+      "already_uploaded": false,
+      "status": {
+        "index_name": "datapacks.knowledge_bases",
+        "source_uri": "s3://meko-kb-uploads-launch-1/5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/",
+        "document_name": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/4308f8668af8568c46fa663e2e9a7ffced61fe865d7edf803e03eca8733d1d27/code_ledger_service_logging_utils.txt",
+        "document_status": "COMPLETED",
+        "chunks_processed": 12,
+        "document": {
+          "chunks_processed": 12,
+          "uploaded_at": "2026-11-22T07:06:39Z",
+          "size_bytes": 2867,
+          "status": "COMPLETED"
+        },
+        "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/4308f8668af8568c46fa663e2e9a7ffced61fe865d7edf803e03eca8733d1d27/code_ledger_service_logging_utils.txt",
+        "filename": "code_ledger_service_logging_utils.txt",
+        "state": "completed",
+        "message": "The file is indexed and searchable."
+      }
+    },
+    {
+      "source_file": "target_repo/ledger_service/retry_client.py",
+      "filename": "code_ledger_service_retry_client.txt",
+      "bytes": 3588,
+      "tokens_cl100k": 895,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/64567b231a3d7a6e04d2454334c133d5bcb80581923d499e22c44a1f5c9cd771/code_ledger_service_retry_client.txt",
+      "already_uploaded": false,
+      "status": {
+        "index_name": "datapacks.knowledge_bases",
+        "source_uri": "s3://meko-kb-uploads-launch-1/5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/",
+        "document_name": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/64567b231a3d7a6e04d2454334c133d5bcb80581923d499e22c44a1f5c9cd771/code_ledger_service_retry_client.txt",
+        "document_status": "COMPLETED",
+        "chunks_processed": 21,
+        "document": {
+          "chunks_processed": 21,
+          "uploaded_at": "2026-11-22T07:06:41Z",
+          "size_bytes": 3588,
+          "status": "COMPLETED"
+        },
+        "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/64567b231a3d7a6e04d2454334c133d5bcb80581923d499e22c44a1f5c9cd771/code_ledger_service_retry_client.txt",
+        "filename": "code_ledger_service_retry_client.txt",
+        "state": "completed",
+        "message": "The file is indexed and searchable."
+      }
+    },
+    {
+      "source_file": "target_repo/ledger_service/security.py",
+      "filename": "code_ledger_service_security.txt",
+      "bytes": 1649,
+      "tokens_cl100k": 387,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0be683de3008fe215455a5719684ba565d8a5703794a0406038d6c28754484d9/code_ledger_service_security.txt",
+      "already_uploaded": false,
+      "status": {
+        "index_name": "datapacks.knowledge_bases",
+        "source_uri": "s3://meko-kb-uploads-launch-1/5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/",
+        "document_name": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0be683de3008fe215455a5719684ba565d8a5703794a0406038d6c28754484d9/code_ledger_service_security.txt",
+        "document_status": "COMPLETED",
+        "chunks_processed": 10,
+        "document": {
+          "chunks_processed": 10,
+          "uploaded_at": "2026-11-22T07:06:43Z",
+          "size_bytes": 1649,
+          "status": "COMPLETED"
+        },
+        "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0be683de3008fe215455a5719684ba565d8a5703794a0406038d6c28754484d9/code_ledger_service_security.txt",
+        "filename": "code_ledger_service_security.txt",
+        "state": "completed",
+        "message": "The file is indexed and searchable."
+      }
+    },
+    {
+      "source_file": "target_repo/ledger_service/webhook.py",
+      "filename": "code_ledger_service_webhook.txt",
+      "bytes": 1695,
+      "tokens_cl100k": 379,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/62495289a58383cda1640232741934dd2cac1bd74ae08f7ca2fb36327c8054fc/code_ledger_service_webhook.txt",
+      "already_uploaded": false,
+      "status": {
+        "index_name": "datapacks.knowledge_bases",
+        "source_uri": "s3://meko-kb-uploads-launch-1/5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/",
+        "document_name": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/62495289a58383cda1640232741934dd2cac1bd74ae08f7ca2fb36327c8054fc/code_ledger_service_webhook.txt",
+        "document_status": "COMPLETED",
+        "chunks_processed": 12,
+        "document": {
+          "chunks_processed": 12,
+          "uploaded_at": "2026-11-22T07:06:45Z",
+          "size_bytes": 1695,
+          "status": "COMPLETED"
+        },
+        "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/62495289a58383cda1640232741934dd2cac1bd74ae08f7ca2fb36327c8054fc/code_ledger_service_webhook.txt",
+        "filename": "code_ledger_service_webhook.txt",
+        "state": "completed",
+        "message": "The file is indexed and searchable."
+      }
+    },
+    {
+      "source_file": "target_repo/sql/migrations/0001_init_ledger.sql",
+      "filename": "sql_0001_init_ledger.txt",
+      "bytes": 1574,
+      "tokens_cl100k": 359,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/e4f8a1d9b92b7b5a44601901221a5527fb4a28eb21c009081f495019d11441a5/sql_0001_init_ledger.txt",
+      "already_uploaded": false,
+      "status": {
+        "index_name": "datapacks.knowledge_bases",
+        "source_uri": "s3://meko-kb-uploads-launch-1/5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/",
+        "document_name": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/e4f8a1d9b92b7b5a44601901221a5527fb4a28eb21c009081f495019d11441a5/sql_0001_init_ledger.txt",
+        "document_status": "COMPLETED",
+        "chunks_processed": 7,
+        "document": {
+          "chunks_processed": 7,
+          "uploaded_at": "2026-11-22T07:06:47Z",
+          "size_bytes": 1574,
+          "status": "COMPLETED"
+        },
+        "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/e4f8a1d9b92b7b5a44601901221a5527fb4a28eb21c009081f495019d11441a5/sql_0001_init_ledger.txt",
+        "filename": "sql_0001_init_ledger.txt",
+        "state": "completed",
+        "message": "The file is indexed and searchable."
+      }
+    },
+    {
+      "source_file": "target_repo/sql/migrations/0002_journal_lookup_index.sql",
+      "filename": "sql_0002_journal_lookup_index.txt",
+      "bytes": 270,
+      "tokens_cl100k": 66,
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/e9ae0ba3d8bb3e86dbb9f49d789844d734368ecc72e419a37608c455e56ca49a/sql_0002_journal_lookup_index.txt",
+      "already_uploaded": false,
+      "status": {
+        "index_name": "datapacks.knowledge_bases",
+        "source_uri": "s3://meko-kb-uploads-launch-1/5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/",
+        "document_name": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/e9ae0ba3d8bb3e86dbb9f49d789844d734368ecc72e419a37608c455e56ca49a/sql_0002_journal_lookup_index.txt",
+        "document_status": "COMPLETED",
+        "chunks_processed": 3,
+        "document": {
+          "chunks_processed": 3,
+          "uploaded_at": "2026-11-22T07:06:49Z",
+          "size_bytes": 270,
+          "status": "COMPLETED"
+        },
+        "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/e9ae0ba3d8bb3e86dbb9f49d789844d734368ecc72e419a37608c455e56ca49a/sql_0002_journal_lookup_index.txt",
+        "filename": "sql_0002_journal_lookup_index.txt",
+        "state": "completed",
+        "message": "The file is indexed and searchable."
+      }
+    }
+  ],
+  "symbols_preserved": {
+    "ROUND_HALF_EVEN": true,
+    "hmac.compare_digest": true,
+    "v1=": true,
+    "Decimal | str | int": true
+  },
+  "adr007_status": {
+    "present_before_check": true,
+    "reseeded": false,
+    "upload": null
+  },
+  "datapack": {
+    "created_at": "2026-11-22T05:26:56.07135Z",
+    "updated_at": "2026-11-22T05:26:56.07135Z",
+    "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+    "datapack_name": "contextcon-adlc",
+    "user_id": "5899dc88-50bf-48c4-9e05-e3843aac8221",
+    "created_by_agent_id": "meko_agent",
+    "universe_id": "",
+    "datapack_ysql_connection_string": "",
+    "datapack_ysql_username": "",
+    "datapack_owner_name": "Prince Jain",
+    "datapack_owner_email_id": "princejain756@gmail.com",
+    "grant": "owner",
+    "memory_count": 18,
+    "knowledge_count": 196,
+    "learnings_count": 18,
+    "collective_memory_count": 2,
+    "conversation_search_opt_out": false,
+    "knowledge_chunk_count": 196,
+    "knowledge_base_file_count": null,
+    "shared_knowledge_count": null,
+    "project": null,
+    "folder": null,
+    "path": null,
+    "status": {
+      "created_at": "2026-11-22T05:26:56.07135Z",
+      "datapack_name": "contextcon-adlc",
+      "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+      "created_by_agent_id": "meko_agent",
+      "universe_id": "",
+      "datapack_ysql_connection_string": "",
+      "datapack_ysql_username": "",
+      "agent_count": 1,
+      "knowledge_base_count": 1
+    }
+  }
+}

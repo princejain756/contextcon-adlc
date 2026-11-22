@@ -1,0 +1,49 @@
+{
+  "conversation_id": "137ec0dd8e28428dbeaadd5a4ef687cc",
+  "amp_core_budget_before": {
+    "tier": "free",
+    "next_tier": "standard",
+    "used_cores": 0,
+    "max_cores": 0.5,
+    "at_limit": false
+  },
+  "status": "amp_branch_verified",
+  "allowed_cidr": "122.171.16.129/32",
+  "cluster_id": "e35a17cf-fa04-4186-a523-24f66c9bb70c",
+  "main_branch_id": "a68fd128-5667-4296-ae99-910cbc2b56a8",
+  "main_endpoint": "ep-a4495971.db.mekodata.ai:20010",
+  "main_branch_seeded_accounts": 1,
+  "main_wal_lsn": "0/15FBEA8",
+  "fork_branch": {
+    "branch_id": "360244b6-0303-42ac-91e1-59c8b07877ba",
+    "name": "pr-dryrun-1795329172"
+  },
+  "fork_endpoint": "ep-83794afd.db.mekodata.ai:20011",
+  "pg_version": "PostgreSQL 18.2 () on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
+  "cow_inherited_account_rows": 1,
+  "verified_tables": [
+    "journal_entries",
+    "journal_lines",
+    "ledger_accounts"
+  ],
+  "verified_indexes": [
+    "idx_journal_lines_tenant_entry",
+    "journal_lines_pkey"
+  ],
+  "negative_amount_check_violation_enforced": true,
+  "artifact": {
+    "artifact_id": "208afd18-8283-4c19-9c77-d7728dee4f09",
+    "content_hash": "42064777807fc97ee7d5c68aa91cfeb2145786fefe4b9b2bd736cedfcf96af49",
+    "filename": "amp_branch_verification.json",
+    "content_type": "application/json",
+    "size_bytes": 584,
+    "stored_in": "db"
+  },
+  "amp_core_budget_after": {
+    "tier": "free",
+    "next_tier": "standard",
+    "used_cores": 0,
+    "max_cores": 0.5,
+    "at_limit": false
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "run_id": "aa0058c5affc4a17b857c03705d25df9",
+  "agent1_claude": {
+    "conversation_id": "aa0058c5affc4a17b857c03705d25df9",
+    "agent_id": "claude-code-architect",
+    "memory_ids": [
+      "3ab4a2a2-1262-4844-8bc0-4c00a4c9d467"
+    ],
+    "artifact_hash": "069ba98c439b7d766450de3067400808847584a6c456bce911e1d8ab74bdd0b4",
+    "verifier": {
+      "passed": true,
+      "rule_violations": []
+    },
+    "tokens": {
+      "input": 1062,
+      "output": 316
+    }
+  },
+  "agent2_codex": {
+    "conversation_id": "58a8e4ff0f8448aaa0eed0bf60c5914c",
+    "agent_id": "codex-verifier",
+    "artifact_access_mode": "cross_agent",
+    "sql_check": {
+      "passed": true,
+      "rule_violations": [],
+      "details": {
+        "sql_len": 1255
+      }
+    },
+    "elapsed_s": 100.176,
+    "tokens": {
+      "in": 1363,
+      "out": 3975
+    },
+    "code_preview": "\"\"\"Static lock-safety checks for ledger-service Postgres migrations.\n\nHeuristics only: this scans SQL with a hand-rolled lexer, not a real grammar.\nTuned for the ledger-service style (plain DDL, DO $$ ... $$ guards, no\ndynamic SQL). Anything it cannot parse is reported, never assumed safe.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport re\n\nMAX_LOCK_TIMEOUT_MS = 10_000\nMAX_STATEMENT_TIMEOUT_MS = 600_000\n\n_IDENT = r'(?:\"(?:[^\"]|\"\")+\"|[A-Za-z_][A-Za-z0-9_$]*)'\n_QUALIFIED = rf\"{_IDENT}(?:\\s*\\.\\s*{_IDENT})?\"\n\n_UNIT_MS = {\n    \"us\": 1e-3, \"usec\": 1e-3, \"usecs\": 1e-3,\n    \"ms\": 1.0, \"msec\": 1.0, \"ms"
+  },
+  "agent3_review": {
+    "conversation_id": "5d443d7ca2ed4991b30d7de0e0dc7103",
+    "agent_id": "pr-review-drift-guard",
+    "findings": [
+      {
+        "adr": "ADR-001.1",
+        "severity": "HIGH",
+        "finding": "Non-concurrent CREATE INDEX blocks table writes."
+      },
+      {
+        "adr": "ADR-001.2",
+        "severity": "HIGH",
+        "finding": "SQL DDL lacks SET lock_timeout = '2s'."
+      },
+      {
+        "adr": "ADR-002.1",
+        "severity": "CRITICAL",
+        "finding": "Binary float arithmetic or round() used in financial calculation."
+      },
+      {
+        "adr": "ADR-004.2",
+        "severity": "MEDIUM",
+        "finding": "Bare print() statement in runtime code risks leaking unredacted PII."
+      },
+      {
+        "adr": "ADR-006.3",
+        "severity": "CRITICAL",
+        "finding": "Dynamic SQL string construction detected; use %s parameters with tenant_id = %s."
+      }
+    ],
+    "elapsed_s": 70.31,
+    "tokens": {
+      "in": 1876,
+      "out": 1403
+    },
+    "audit_artifact": {
+      "artifact_id": "de85f226-9a55-4d08-bb2e-af7c13ace911",
+      "content_hash": "52176fe0b32e7d9fc21a2f955011a8843239f988a700db67ba802e9d5e98f426",
+      "filename": "pr_drift_audit_report.json",
+      "content_type": "application/json",
+      "size_bytes": 7557,
+      "stored_in": "db"
+    },
+    "raw": "I've reconciled the five static findings against the actual ADR text and found two additional grounded violations in the same diff. Here's the review.\n\n```json\n{\n  \"decision\": \"CHANGES_REQUESTED\",\n  \"findings\": [\n    {\n      \"adr\": \"ADR-001.1\",\n      \"severity\": \"HIGH\",\n      \"explanation\": \"The diff adds 'CREATE INDEX idx_refund_lookup ON ledger_refunds (parent_entry_id);' as a bare statement inside target_repo/ledger_service/bad_pr.py. A non-concurrent CREATE INDEX takes a SHARE lock for the full build, which stalls settlement writers and exhausts the connection pool; this is the exact mechanism behind INC-2026-041. It also has no NO_TX marker and lives in a Python module instead of target_repo/sql/migrations/0003_*.sql, so it is a SyntaxError that breaks the module import and will never be applied by the migration runner. Required form: a versioned .sql migration starting with '-- migrate:no-transaction (NO_TX)' and 'CREATE INDEX CONCURRENTLY IF NOT EXISTS'. Separately, the index columns do not serve the only query in this diff (journal_entries WHERE entry_id); per ADR-006.3 the tenant-scoped index should be on journal_entries (tenant_id, entry_id), matching migration 0002.\"\n    },\n    {\n      \"adr\": \"ADR-001.2\",\n      \"severity\": \"HIGH\",\n      \"explanation\": \"No 'SET lock_timeout = '2s';' and no 'SET statement_timeout = '30s';' precede the DDL. ADR-001.2 requires both before any CREATE INDEX, DROP, or ALTER so that a blocked migration fails fast instead of queueing live traffic behind it. Migration 0002 already models the correct header; this PR drops both guards. Because the statement is embedded in a Python file, there is also no migration runner to supply them implicitly.\"\n    },\n    {\n      \"adr\": \"ADR-002.1\",\n      \"severity\": \"CRITICAL\",\n      \"explanation\": \"Fee computation is 'fee = round(amount_minor * 0.029, 2)', which uses the binary float literal 0.029 and Python round(), and returns a float rather than integer minor units. This is explicitly listed as a rejected anti-pattern in ADR-002.1 and matches the fee refactor in INC-2026-078 that drifted 2 cents per 10,000 settlements. It must be Decimal('0.029') with quantize(Decimal('1'), rounding=ROUND_HALF_EVEN) and a return of int minor units; no float may cross a ledger boundary.\"\n    },\n    {\n      \"adr\": \"ADR-004.2\",\n      \"severity\": \"MEDIUM\",\n      \"explanation\": \"The function calls 'print(\\\"refund authorized for\\\", email, api_key)', emitting a customer email and a raw API key to stdout with no redaction and no structured record. ADR-004.2 bans bare print() and f-string logging in runtime modules, and ADR-004.1 requires email and api_key to pass through redact_payload. Replace it with serialize_log_record(event, tenant_id, correlation_id, fields={...}) from logging_utils, which redacts both values automatically. The static baseline rates this MEDIUM, but it leaks a live credential, so treat it as HIGH before merge and rotate any key used during testing.\"\n    },\n    {\n      \"adr\": \"ADR-006.3\",\n      \"severity\": \"CRITICAL\",\n      \"explanation\": \"'sql = f\\\"SELECT * FROM journal_entries WHERE entry_id = '{tenant_id}'\\\"' interpolates an f-string into SQL and then returns a bare string instead of a (query_str, params) tuple. ADR-006.3 requires %s placeholders with explicit 'tenant_id = %s' on tenant-owned tables. Beyond injection, the statement binds tenant_id into the entry_id predicate and omits the tenant predicate entirely, so it can return another tenant's journal entry. Use the existing helper pattern in security.build_select_journal_query, which enforces ledger:read and returns the tenant-scoped query plus params.\"\n    },\n    {\n      \"adr\": \"ADR-003.1\",\n      \"severity\": \"HIGH\",\n      \"explanation\": \"Signature verification uses 'if provided_sig == expected_sig:', a non-constant-time comparison explicitly rejected by ADR-003.1 (timing leak) and the anti-pattern list. Verification must go through hmac.compare_digest over an HMAC-SHA256 digest computed from the raw body per ADR-003.2, with the abs(now - timestamp) <= 300 replay window from ADR-003.3. Passing pre-computed signature strings into the function also bypasses the webhook verification path entirely.\"\n    },\n    {\n      \"adr\": \"ADR-002.3\",\n      \"severity\": \"HIGH\",\n      \"explanation\": \"quick_refund is a mutating refund operation but takes no idempotency_key and computes no canonical request_hash. ADR-002.3 requires every create_refund to carry a non-empty idempotency_key and a SHA-256 fingerprint over tenant, operation, amounts, and currency, with uniqueness scoped by (tenant_id, idempotency_key); a replay must return the recorded result with replayed=True and a mismatched fingerprint must raise IdempotencyConflictError. As written, a retried request posts a second refund. The related ADR-002.4 refund-cap check against the original settled amount is also absent.\"\n    }\n  ],\n  \"explain_this_decision_under_2min\": \"I blocked this pull request because it breaks several of our written safety rules for the payments ledger, and most of the problems are repeats of incidents we have already had. The database index command would lock the ledger table while it builds, which is the same thing that caused our September outage, and it is written in the wrong kind of file so it would never actually run correctly. The refund fee is calculated with ordinary computer decimal math that can lose track of tiny fractions of a cent, which is exactly what caused our October reconciliation mismatch. The code also prints a customer's email address and a secret API key to the console, and it builds a database query by pasting text together, which could let one customer see another customer's records. The security signature check is also done in a way that is vulnerable to timing attacks. Finally, a refund has nothing to stop the same request from being paid twice if it is retried. None of these are hard to fix, but each one is a known failure we promised to prevent, so the review stays blocked until the fixes are in and the required database testing has been run.\"\n}\n```"
+  }
+}

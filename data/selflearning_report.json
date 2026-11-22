@@ -1,0 +1,434 @@
+{
+  "conversation_id": "db999c1e51da4c48bddcef868cd3cbf7",
+  "weak_query": "settlement batch cutoff timezone and clearing bank holiday window policy",
+  "first_search_preview": "{'results': {'knowledge_base': [], 'memory': [{'id': '024ba773-5879-4264-b5fa-5df68d89402f', 'memory': 'On November 22, 2026, the user intends to run zero-copy AMP Postgres branch verification for the ledger-service migrations, requesting that the branch\u2019s migrations be verified using AMP Postgres in a zero-copy mode.', 'hash': '5e1cd1f30b712334e68e5908ed6a21d2', 'metadata': {'meko_datapack_id': '56a399c1-e5a5-4027-a5c4-f7d1807c2a41'}, 'score': 0.3025396459676222, 'created_at': '2026-11-22T06:07:49.271541+00:00', 'updated_at': '2026-11-22T06:07:49.271541+00:00', 'raw_similarity_score': 0.30253",
+  "log_id": "f1794f9a-c30f-4b92-a2c2-a67408dfee78",
+  "status_before": {
+    "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+    "window": {
+      "from": "2026-11-16T00:00:00Z",
+      "to": "2026-11-23T00:00:00Z"
+    },
+    "quality": {
+      "pct": 0,
+      "potential_pct": 100,
+      "searches": 4,
+      "high": 0
+    },
+    "todos": [
+      {
+        "id": "add_content",
+        "group": "setup",
+        "state": "done",
+        "title": "Add your first document or memory",
+        "why": "Searches need something to find. Upload a document or add a memory so your agents have context to search.",
+        "searches": 0,
+        "points": 0,
+        "shortfall": [],
+        "examples": []
+      },
+      {
+        "id": "first_searches",
+        "group": "setup",
+        "state": "done",
+        "title": "Run your first searches from an agent",
+        "why": "The list can only tell you what to fix once agents have searched. Connect an agent and run a few searches.",
+        "searches": 0,
+        "points": 0,
+        "shortfall": [],
+        "examples": []
+      },
+      {
+        "id": "add_context",
+        "group": "improve",
+        "state": "todo",
+        "title": "Add context for 4 searches that found little or nothing",
+        "why": "These searches found little or nothing, usually because the datapack does not cover the topic yet. Add a memory or a document that answers them, then re-run them to check.",
+        "searches": 4,
+        "points": 100,
+        "shortfall": [
+          {
+            "field": "category",
+            "op": "eq",
+            "value": "coverage"
+          }
+        ],
+        "examples": [
+          {
+            "log_id": "84ded6fb-9742-48d5-9723-08374dceb1a2",
+            "label": "Migration 0003 NOT VALID VALIDATE CONSTRAINT lock_timeout refund fee Decimal ROU",
+            "detail": "partial match",
+            "count": 2
+          },
+          {
+            "log_id": "b641bb0f-2c42-4272-9770-d598b73f607b",
+            "label": "CREATE INDEX CONCURRENTLY lock_timeout float round hmac.compare_digest raw bytes",
+            "detail": "weak match",
+            "count": 1
+          },
+          {
+            "log_id": "4cf08ddf-3049-4a54-9c23-41c3505737bc",
+            "label": "zero downtime postgres migration lock_timeout CONCURRENTLY NO_TX NOT VALID refun",
+            "detail": "partial match",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "save_test_prompts",
+        "group": "maintain",
+        "state": "todo",
+        "title": "Save a search as a test prompt",
+        "why": "A saved search can be replayed after you add context, so you can see whether the fix worked.",
+        "searches": 4,
+        "points": 0,
+        "shortfall": [
+          {
+            "field": "band",
+            "op": "in",
+            "value": [
+              "mid",
+              "low"
+            ]
+          }
+        ],
+        "examples": []
+      }
+    ],
+    "open_fixes": [
+      "add_context"
+    ],
+    "breakdown": {
+      "totals": {
+        "avg_score": 0.4921,
+        "avg_elapsed_ms": 1638.8,
+        "searches": 4,
+        "zero_results": 0
+      },
+      "by_band": {
+        "high": 0,
+        "mid": 3,
+        "low": 1
+      },
+      "by_category": [
+        {
+          "category": "coverage",
+          "count": 4
+        }
+      ],
+      "by_reason": [
+        {
+          "reason": "partial_match",
+          "category": "coverage",
+          "sub_types": [
+            {
+              "sub_type": "knowledge_base",
+              "count": 3
+            }
+          ],
+          "count": 3
+        },
+        {
+          "reason": "weak_match",
+          "category": "coverage",
+          "sub_types": [
+            {
+              "sub_type": "knowledge_base",
+              "count": 1
+            }
+          ],
+          "count": 1
+        }
+      ]
+    },
+    "history": [],
+    "hint": "Read the searches behind a to-do with selflearning_shortfalls(todo_id=...), fix with memory_add or knowledgebase_upload_document, then check it with selflearning_verify."
+  },
+  "shortfalls": {
+    "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+    "todo": "add_context",
+    "page": 1,
+    "page_size": 10,
+    "total": 4,
+    "has_more": false,
+    "searches": [
+      {
+        "log_id": "84ded6fb-9742-48d5-9723-08374dceb1a2",
+        "query": "Migration 0003 NOT VALID VALIDATE CONSTRAINT lock_timeout refund fee Decimal ROUND_HALF_EVEN",
+        "count": 2,
+        "band": "mid",
+        "best_score": 0.5001,
+        "reason": "partial_match",
+        "state": "open",
+        "last_searched_at": "2026-11-22T06:20:47.58966Z",
+        "test_prompt_id": null,
+        "latest_run": null,
+        "unverified_count": 0
+      },
+      {
+        "log_id": "f1794f9a-c30f-4b92-a2c2-a67408dfee78",
+        "query": "settlement batch cutoff timezone and clearing bank holiday window policy",
+        "count": 1,
+        "band": "low",
+        "best_score": 0.3025,
+        "reason": "weak_match",
+        "state": "open",
+        "last_searched_at": "2026-11-22T06:24:01.576494Z",
+        "test_prompt_id": null,
+        "latest_run": null,
+        "unverified_count": 0
+      },
+      {
+        "log_id": "b641bb0f-2c42-4272-9770-d598b73f607b",
+        "query": "CREATE INDEX CONCURRENTLY lock_timeout float round hmac.compare_digest raw bytes print email SQL f-string",
+        "count": 1,
+        "band": "low",
+        "best_score": 0.2943,
+        "reason": "weak_match",
+        "state": "open",
+        "last_searched_at": "2026-11-22T06:22:37.497531Z",
+        "test_prompt_id": null,
+        "latest_run": null,
+        "unverified_count": 0
+      },
+      {
+        "log_id": "4cf08ddf-3049-4a54-9c23-41c3505737bc",
+        "query": "zero downtime postgres migration lock_timeout CONCURRENTLY NO_TX NOT VALID refund idempotency",
+        "count": 1,
+        "band": "mid",
+        "best_score": 0.674,
+        "reason": "partial_match",
+        "state": "open",
+        "last_searched_at": "2026-11-22T06:13:46.385992Z",
+        "test_prompt_id": null,
+        "latest_run": null,
+        "unverified_count": 0
+      }
+    ]
+  },
+  "kb_fix": {
+    "init": {
+      "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+      "url": "https://meko-kb-uploads-launch-1.s3.us-east-2.amazonaws.com",
+      "fields": {
+        "X-Amz-Algorithm": "AWS4-HMAC-SHA256",
+        "X-Amz-Credential": "AKIA26DARBTXWPOBV2SI/20261122/us-east-2/s3/aws4_request",
+        "X-Amz-Date": "20261122T062408Z",
+        "X-Amz-Signature": "4d858def2c009ac2d91600508537fb22a29da3f21d055b8b25d106ec724135ce",
+        "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0c0eab0fd0982bfbd10bf0efcc0fb21cf124263c0c9dd38d1be052e5ae5d3ddb/ADR-007_settlement_cutoff_and_holiday_windows.md",
+        "policy": "eyJjb25kaXRpb25zIjpbeyJYLUFtei1BbGdvcml0aG0iOiJBV1M0LUhNQUMtU0hBMjU2In0seyJidWNrZXQiOiJtZWtvLWtiLXVwbG9hZHMtbGF1bmNoLTEifSx7IlgtQW16LUNyZWRlbnRpYWwiOiJBS0lBMjZEQVJCVFhXUE9CVjJTSS8yMDI2MTEyMi91cy1lYXN0LTIvczMvYXdzNF9yZXF1ZXN0In0seyJYLUFtei1EYXRlIjoiMjAyNjExMjJUMDYyNDA4WiJ9LFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLDYwNiw2MDZdLFsiZXEiLCIkeC1hbXotY2hlY2tzdW0tc2hhMjU2IiwiREE2ckQ5Q1lLL3ZSQy9EdnpBK3lIUEVrSmp3TW5kT05HK0JTNWE1ZFBkcz0iXSx7ImtleSI6IjU4OTlkYzg4LTUwYmYtNDhjNC05ZTA1LWUzODQzYWFjODIyMS81NmEzOTljMS1lNWE1LTQwMjctYTVjNC1mN2QxODA3YzJhNDEvMGMwZWFiMGZkMDk4MmJmYmQxMGJmMGVmY2MwZmIyMWNmMTI0MjYzYzBjOWRkMzhkMWJlMDUyZTVhZTVkM2RkYi9BRFItMDA3X3NldHRsZW1lbnRfY3V0b2ZmX2FuZF9ob2xpZGF5X3dpbmRvd3MubWQifV0sImV4cGlyYXRpb24iOiIyMDI2LTExLTIyVDA2OjI5OjA4WiJ9",
+        "x-amz-checksum-sha256": "DA6rD9CYK/vRC/DvzA+yHPEkJjwMndONG+BS5a5dPds="
+      },
+      "key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0c0eab0fd0982bfbd10bf0efcc0fb21cf124263c0c9dd38d1be052e5ae5d3ddb/ADR-007_settlement_cutoff_and_holiday_windows.md",
+      "already_uploaded": false
+    },
+    "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0c0eab0fd0982bfbd10bf0efcc0fb21cf124263c0c9dd38d1be052e5ae5d3ddb/ADR-007_settlement_cutoff_and_holiday_windows.md",
+    "already_uploaded": false,
+    "status": {
+      "index_name": "datapacks.knowledge_bases",
+      "source_uri": "s3://meko-kb-uploads-launch-1/5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/",
+      "document_name": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0c0eab0fd0982bfbd10bf0efcc0fb21cf124263c0c9dd38d1be052e5ae5d3ddb/ADR-007_settlement_cutoff_and_holiday_windows.md",
+      "document_status": "COMPLETED",
+      "chunks_processed": 2,
+      "document": {
+        "chunks_processed": 2,
+        "uploaded_at": "2026-11-22T06:24:10Z",
+        "size_bytes": 606,
+        "status": "COMPLETED"
+      },
+      "document_key": "5899dc88-50bf-48c4-9e05-e3843aac8221/56a399c1-e5a5-4027-a5c4-f7d1807c2a41/0c0eab0fd0982bfbd10bf0efcc0fb21cf124263c0c9dd38d1be052e5ae5d3ddb/ADR-007_settlement_cutoff_and_holiday_windows.md",
+      "filename": "ADR-007_settlement_cutoff_and_holiday_windows.md",
+      "state": "completed",
+      "message": "The file is indexed and searchable."
+    }
+  },
+  "memory_ids": [
+    "cc9d877c-ab17-4728-a641-c7c50a9c13c0"
+  ],
+  "selflearning_verify": {
+    "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+    "test_prompt_id": "1c96a2af-e863-43d0-96f9-9615087d6937",
+    "query": "settlement batch cutoff timezone and clearing bank holiday window policy",
+    "before": {
+      "run_no": null,
+      "band": "low",
+      "best_score": 0.3025,
+      "source": "baseline"
+    },
+    "after": {
+      "run_no": 1,
+      "band": "high",
+      "best_score": 0.8674
+    },
+    "outcome": "improved",
+    "change": null,
+    "nothing_added_since_last_run": false,
+    "indexing": false,
+    "added_since_last_run": [],
+    "hits_above_mid": 2,
+    "top_results": [
+      {
+        "score": 0.8673583590327638,
+        "ts": null,
+        "s": "knowledge_base",
+        "id": "a59a78d8-bf23-5074-931f-dac75e27c0fb",
+        "title": "Section: ADR-007: Settlement Batch Cutoff Timezone and Clearing Holiday Window Policy > Mandatory Settlement Scheduling Rules Daily settlement batch cutoff executes strictly at 21:30 UTC ().All ledger",
+        "kind": "document"
+      },
+      {
+        "score": 0.7138585272624247,
+        "ts": null,
+        "s": "knowledge_base",
+        "id": "5cfb2e4b-9f5f-56a8-af48-516002cade64",
+        "title": "Section: ADR-007: Settlement Batch Cutoff Timezone and Clearing Holiday Window Policy Namespace:",
+        "kind": "document"
+      },
+      {
+        "score": 0.43865710195132335,
+        "ts": "2026-11-22T06:24:37.633240+00:00",
+        "s": "memory",
+        "id": "d323fae5-f4af-4f32-9a63-e120fe56918d",
+        "title": "On November 22, 2026, the user requested running the Meko self-learning detection and verification loop for a settlement cutoff query.",
+        "kind": "memory"
+      },
+      {
+        "score": 0.3025396459676222,
+        "ts": "2026-11-22T06:07:49.271541+00:00",
+        "s": "memory",
+        "id": "024ba773-5879-4264-b5fa-5df68d89402f",
+        "title": "On November 22, 2026, the user intends to run zero-copy AMP Postgres branch verification for the ledger-service migrations, requesting that the branch\u2019s migrations be verified using AMP Postgres in a ",
+        "kind": "memory"
+      },
+      {
+        "score": 0.28968533639547345,
+        "ts": "2026-11-22T06:12:30.945323+00:00",
+        "s": "memory",
+        "id": "f63edf12-96fb-4b18-940b-29836337d454",
+        "title": "On November 22, 2026, the user requested running zero-copy AMP Postgres branch verification for the ledger-service migrations with a strict compute cap of 0.5 vCPU, ensuring the branch\u2019s migrations ar",
+        "kind": "memory"
+      }
+    ],
+    "hint": "The fix helped."
+  },
+  "status_after": {
+    "datapack_id": "56a399c1-e5a5-4027-a5c4-f7d1807c2a41",
+    "window": {
+      "from": "2026-11-16T00:00:00Z",
+      "to": "2026-11-23T00:00:00Z"
+    },
+    "quality": {
+      "pct": 0,
+      "potential_pct": 100,
+      "searches": 5,
+      "high": 0
+    },
+    "todos": [
+      {
+        "id": "add_content",
+        "group": "setup",
+        "state": "done",
+        "title": "Add your first document or memory",
+        "why": "Searches need something to find. Upload a document or add a memory so your agents have context to search.",
+        "searches": 0,
+        "points": 0,
+        "shortfall": [],
+        "examples": []
+      },
+      {
+        "id": "first_searches",
+        "group": "setup",
+        "state": "done",
+        "title": "Run your first searches from an agent",
+        "why": "The list can only tell you what to fix once agents have searched. Connect an agent and run a few searches.",
+        "searches": 0,
+        "points": 0,
+        "shortfall": [],
+        "examples": []
+      },
+      {
+        "id": "add_context",
+        "group": "improve",
+        "state": "todo",
+        "title": "Add context for 5 searches that found little or nothing",
+        "why": "These searches found little or nothing, usually because the datapack does not cover the topic yet. Add a memory or a document that answers them, then re-run them to check.",
+        "searches": 5,
+        "points": 100,
+        "shortfall": [
+          {
+            "field": "category",
+            "op": "eq",
+            "value": "coverage"
+          }
+        ],
+        "examples": [
+          {
+            "log_id": "84ded6fb-9742-48d5-9723-08374dceb1a2",
+            "label": "Migration 0003 NOT VALID VALIDATE CONSTRAINT lock_timeout refund fee Decimal ROU",
+            "detail": "partial match",
+            "count": 2
+          },
+          {
+            "log_id": "f1794f9a-c30f-4b92-a2c2-a67408dfee78",
+            "label": "settlement batch cutoff timezone and clearing bank holiday window policy",
+            "detail": "weak match",
+            "count": 1
+          },
+          {
+            "log_id": "b641bb0f-2c42-4272-9770-d598b73f607b",
+            "label": "CREATE INDEX CONCURRENTLY lock_timeout float round hmac.compare_digest raw bytes",
+            "detail": "weak match",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "open_fixes": [
+      "add_context"
+    ],
+    "breakdown": {
+      "totals": {
+        "avg_score": 0.4542,
+        "avg_elapsed_ms": 1596,
+        "searches": 5,
+        "zero_results": 0
+      },
+      "by_band": {
+        "high": 0,
+        "mid": 3,
+        "low": 2
+      },
+      "by_category": [
+        {
+          "category": "coverage",
+          "count": 5
+        }
+      ],
+      "by_reason": [
+        {
+          "reason": "partial_match",
+          "category": "coverage",
+          "sub_types": [
+            {
+              "sub_type": "knowledge_base",
+              "count": 3
+            }
+          ],
+          "count": 3
+        },
+        {
+          "reason": "weak_match",
+          "category": "coverage",
+          "sub_types": [
+            {
+              "sub_type": "knowledge_base",
+              "count": 2
+            }
+          ],
+          "count": 2
+        }
+      ]
+    },
+    "history": [],
+    "hint": "Read the searches behind a to-do with selflearning_shortfalls(todo_id=...), fix with memory_add or knowledgebase_upload_document, then check it with selflearning_verify."
+  }
+}

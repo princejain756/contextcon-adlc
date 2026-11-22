@@ -4,6 +4,9 @@ Shared engineering memory, cross-agent handoff, AMP Postgres 18 zero-copy branch
 
 Submitted for HackerEarth **ContextCon: Remember Everything** under Theme 01 (Coding Agents and ADLC), alongside Theme 07 (2-Minute Auditability) and Theme 08 (10-Task Token Efficiency Benchmark).
 
+- **Live Interactive 2-Minute Audit Portal**: https://contextcon.prince.sh
+- **Public GitHub Repository**: https://github.com/princejain756/contextcon-adlc
+
 ## Problem
 
 Every isolated coding session starts cold. Developers or agents re-paste architecture docs and source files on every turn, spending 9,000+ prompt tokens repeatedly, while downstream agents (Claude Code, Codex CLI, automated PR reviewers) cannot read the prior agent's reasoning, promoted schema gotchas, or build artifacts without manual copy-paste.
@@ -98,6 +101,9 @@ uv run meko-adlc benchmark --resume --limit 6 --timeout 240 --task-ids T06,T07,T
 
 # Export traces, memories, and self-learning stats for portal UI
 uv run meko-adlc export-portal-data
+
+# Optional: run the Next.js Live Trace & Audit Portal locally
+cd portal && npm install && npm run dev
 ```
 
 ## Repository Map
@@ -110,6 +116,7 @@ uv run meko-adlc export-portal-data
 - `target_repo/`: Benchmark fintech `ledger_service` Python modules, SQL migrations, and unit tests.
 - `docs/standards/`: Team standards (`ADR-001` through `ADR-006`, `INC-2026-041`, `INC-2026-078`, `SERVICE_CONTRACTS_AND_RUNBOOKS.md`).
 - `data/`: Ground-truth JSON captures (`seed_report.json`, `amp_report.json`, `handoff_report.json`, `selflearning_report.json`, `benchmark_results.json`, `exported_traces.json`, `portal_snapshot.json`).
+- `portal/`: Next.js 16 + Tailwind CSS v4 interactive audit portal (deployed at https://contextcon.prince.sh).
 - `tests/`: Unit test suite (`16 passed`).
 - [ARCHITECTURE.md](ARCHITECTURE.md): Protocol internals, AMP branching mechanics, and multi-agent trace design.
 - [BENCHMARK_METHODOLOGY.md](BENCHMARK_METHODOLOGY.md): Full 10-task numbers, verifier specs, and limitations.
